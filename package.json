@@ -1,0 +1,25 @@
+{
+  "name": "azuli",
+  "version": "1.0.0",
+  "description": "AI earn cloud instance",
+  "keywords": [
+    "[\"money\"",
+    "\"balance\"]"
+  ],
+  "homepage": "https://github.com/ishdav/azuli#readme",
+  "bugs": {
+    "url": "https://github.com/ishdav/azuli/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/ishdav/azuli.git"
+  },
+  "license": "MIT",
+  "author": "John Doe",
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "test": "npm test",
+    "azuli": "/ui/index."
+  }
+}
