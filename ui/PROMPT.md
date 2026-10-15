@@ -1,0 +1,1 @@
+Th system allows user to create an account but the user create an account requires invitation code or qr code from already registered user means each user will have his own invitation code to give to other users

@@ -3,8 +3,13 @@
   "version": "1.0.0",
   "description": "AI earn cloud instance",
   "keywords": [
-    "[\"money\"",
-    "\"balance\"]"
+    "money",
+    "balance"
+  ],
+  "private": true,
+  "workspaces": [
+    "ui",
+    "server"
   ],
   "homepage": "https://github.com/ishdav/azuli#readme",
   "bugs": {
@@ -20,6 +25,12 @@
   "main": "main.js",
   "scripts": {
     "test": "npm test",
-    "azuli": "/ui/index."
+    "dev:ui": "npm run dev -w ui",
+    "dev:server": "npm run dev -w server",
+    "dev": "npm run dev --workspaces --if-present --parallel",
+    "build:ui": "npm run build -w ui",
+    "build:server": "npm run build -w server",
+    "build": "npm run build --workspaces --if-present",
+    "azuli": "npm run dev --workspaces --if-present --parallel"
   }
 }
