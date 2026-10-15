@@ -1,5 +1,4 @@
-### AZULI
-`Where confidence `
+
 ```
 azuli
 ├─ LICENSE
@@ -12,6 +11,9 @@ azuli
 │  ├─ server.js
 │  └─ src
 └─ ui
+   ├─ assets
+   │  ├─ Screenshot (278).png
+   │  └─ Screenshot (279).png
    ├─ components.json
    ├─ eslint.config.mjs
    ├─ jsconfig.json
@@ -22,6 +24,14 @@ azuli
    ├─ public
    │  ├─ file.svg
    │  ├─ globe.svg
+   │  ├─ images
+   │  │  ├─ gaudi.jpg
+   │  │  ├─ h100.jpg
+   │  │  ├─ mi300x.jpg
+   │  │  ├─ samba.jpg
+   │  │  └─ tpu.jpg
+   │  ├─ logo.png
+   │  ├─ logo.svg
    │  ├─ next.svg
    │  ├─ vercel.svg
    │  └─ window.svg
@@ -29,6 +39,8 @@ azuli
    └─ src
       ├─ app
       │  ├─ checkin
+      │  │  └─ page.js
+      │  ├─ contact
       │  │  └─ page.js
       │  ├─ equipment
       │  │  ├─ page.js
@@ -38,7 +50,11 @@ azuli
       │  ├─ globals.css
       │  ├─ history
       │  │  └─ page.js
+      │  ├─ home
+      │  │  └─ page.js
       │  ├─ layout.js
+      │  ├─ my-device
+      │  │  └─ app.js
       │  ├─ page.js
       │  ├─ profile
       │  │  └─ page.js
@@ -51,7 +67,17 @@ azuli
       │  └─ withdraw
       │     └─ page.js
       ├─ components
+      │  ├─ AppMenu.js
+      │  ├─ BalanceCard.js
       │  ├─ BottomNav.js
+      │  ├─ DeviceCard.js
+      │  ├─ EquipmentCard.js
+      │  ├─ EquipmentList.js
+      │  ├─ Header.js
+      │  ├─ MenuItem.js
+      │  ├─ MenuItems.js
+      │  ├─ QuickActions.js
+      │  ├─ StatCard.js
       │  └─ ui
       │     ├─ button.jsx
       │     ├─ card.jsx
@@ -59,10 +85,11 @@ azuli
       │     ├─ input.jsx
       │     ├─ label.jsx
       │     ├─ select.jsx
+      │     ├─ sheet.jsx
       │     ├─ tabs.jsx
       │     └─ toast.jsx
       ├─ context
-      │  └─ App.context.js
+      │  └─ AppContext.js
       └─ lib
          └─ utils.js
 

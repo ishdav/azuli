@@ -45,21 +45,21 @@ export default function RechargePage() {
             </div>
             <h2 className="text-xl font-bold text-gray-800">FUND YOUR NODE</h2>
             <div className="flex justify-center gap-4 mt-4 text-xs text-gray-500">
-              <span className="flex items-center gap-1"><CheckCircle2 size={12}/> ENCRYPTED</span>
-              <span className="flex items-center gap-1"><CheckCircle2 size={12}/> INSTANT CREDIT</span>
-              <span className="flex items-center gap-1"><CheckCircle2 size={12}/> SECURE PAYMENT</span>
+              <span className="flex items-center gap-1"><CheckCircle2 size={12} /> ENCRYPTED</span>
+              <span className="flex items-center gap-1"><CheckCircle2 size={12} /> INSTANT CREDIT</span>
+              <span className="flex items-center gap-1"><CheckCircle2 size={12} /> SECURE PAYMENT</span>
             </div>
           </Card>
 
           <Card className="p-6 space-y-6">
             <h3 className="text-center font-bold">Select Amount</h3>
-            <div className="flex items-center justify-between bg-gray-50 border rounded-lg p-2">
+            <div className="flex items-center justify-between bg-gray-50 border rounded-md p-2">
               <Button variant="ghost" size="icon" onClick={() => setAmount(Math.max(0, amount - 5000))}>-</Button>
               <div className="text-center">
                 <p className="text-xs text-emerald-600 font-bold">RWF</p>
-                <input 
-                  type="number" 
-                  className="text-3xl font-bold text-center w-32 bg-transparent outline-none" 
+                <input
+                  type="number"
+                  className="text-3xl font-bold text-center w-32 bg-transparent outline-none"
                   value={amount}
                   onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
                 />
@@ -67,7 +67,7 @@ export default function RechargePage() {
               </div>
               <Button variant="ghost" size="icon" onClick={() => setAmount(amount + 5000)}>+</Button>
             </div>
-            
+
             <div className="flex justify-between text-xs text-gray-500 font-medium">
               <span className="text-emerald-600 border-b-2 border-emerald-600 pb-1">10000</span>
               <span>30000</span>
@@ -98,12 +98,12 @@ export default function RechargePage() {
             <p className="text-sm text-gray-500">Please select payment wallet</p>
           </div>
 
-          <div className="flex gap-2 border rounded-lg p-2">
+          <div className="flex gap-2 border rounded-md p-2">
             <button className="flex-1 bg-yellow-400 text-black font-bold py-2 rounded flex justify-center items-center gap-1"><span className="text-[10px]">MTN</span></button>
             <button className="flex-1 bg-white text-red-500 border font-bold py-2 rounded flex justify-center items-center gap-1"><span className="text-[10px]">airtel</span></button>
           </div>
 
-          <div className="bg-gray-50 p-4 rounded-lg text-sm space-y-4">
+          <div className="bg-gray-50 p-4 rounded-md text-sm space-y-4">
             <div>
               <p className="font-bold text-gray-800">Step 1</p>
               <p className="text-gray-600">Copy the wallet account:</p>

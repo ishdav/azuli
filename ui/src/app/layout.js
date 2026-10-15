@@ -7,9 +7,9 @@ export const metadata = { title: "Shadeform App", description: "AI Computing Pow
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="bg-gray-50 flex justify-center min-h-screen">
+      <body className="bg-gray-900 flex justify-center min-h-screen">
         <AppProvider>
-          <main className="w-full max-w-md bg-white min-h-screen relative shadow-2xl pb-20">
+          <main className="w-full max-w-md bg-green-100 min-h-screen relative shadow-2xl pb-20">
             {children}
             <BottomNav />
           </main>

@@ -15,7 +15,7 @@ export default function Register() {
     if (form.password !== form.confirm) return alert("Passwords do not match");
     try {
       register(form.phone, form.password, form.invite);
-      router.push("/");
+      router.push("/home");
     } catch (e) {
       alert(e.message);
     }

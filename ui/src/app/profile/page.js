@@ -1,101 +1,236 @@
 "use client";
-import { useApp } from "@/context/AppContext";
+import { useApp, EQUIPMENT_CATALOG } from "@/context/AppContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Cpu, History, Wallet, LogOut, Users } from "lucide-react";
+import { useEffect, useMemo } from "react";
+import {
+  Menu,
+  TrendingUp,
+  Cpu,
+  Lightbulb,
+  FileText,
+  Sun,
+  ArrowRight,
+} from "lucide-react";
+import { BarChart, Bar, ResponsiveContainer, Cell } from "recharts";
+import AppMenu from "@/components/AppMenu";
+import Logo from "../../../public/logo.png";
 
 export default function ProfilePage() {
-  const { user, logout } = useApp();
+  const { user } = useApp();
   const router = useRouter();
+
+  useEffect(() => {
+    if (!user) router.push("/");
+  }, [user, router]);
+
+  // 7-bar chart data
+  const chartData = useMemo(() => {
+    if (!user) return [];
+    const dailyTotal = user.equipment.reduce(
+      (sum, eq) => sum + eq.dailyEarning,
+      0
+    );
+    const base = dailyTotal || 1000;
+    return [
+      { v: base * 0.35 },
+      { v: base * 0.55 },
+      { v: base * 0.7 },
+      { v: base * 0.65 },
+      { v: base * 0.85 },
+      { v: base * 0.75 },
+      { v: base * 1.0 },
+    ];
+  }, [user]);
 
   if (!user) return null;
 
+  const hasDevices = user.equipment.length > 0;
+
   return (
-    <div className="p-4 space-y-6">
-      <div className="flex items-center justify-between mt-4 mb-2">
-        <h1 className="text-xl font-bold">User details</h1>
-        <LogOut size={20} className="text-gray-400 cursor-pointer" onClick={() => { logout(); router.push("/login"); }} />
+    <div className="p-4 space-y-5 pb-24">
+      {/* Header */}
+      <div className="flex justify-between items-center mt-2">
+        <AppMenu />
+        <h1 className="text-base font-semibold">User details</h1>
+        <div className="w-9 h-9 rounded-md overflow-hidden border border-gray-100">
+          <img
+            src={Logo.src}
+            alt="Logo"
+            className="w-full h-full object-contain"
+          />
+        </div>
       </div>
 
-      {/* Account Balance Card */}
-      <Card className="p-5 bg-gradient-to-br from-emerald-50 to-white shadow-sm border-emerald-100">
-        <p className="text-xs text-gray-500 font-medium">Account Balance</p>
-        <div className="flex justify-between items-center mt-1">
-          <h2 className="text-3xl font-bold">{user.balance.toFixed(2)} RWF</h2>
-          <div className="flex gap-2">
-            <Button size="sm" variant="outline" className="border-emerald-200 text-emerald-700" onClick={() => router.push("/recharge")}>Recharge</Button>
-            <Button size="sm" className="bg-emerald-700 hover:bg-emerald-800 text-white" onClick={() => router.push("/withdraw")}>Withdraw</Button>
+      {/* Balance Card with Chart */}
+      <Card className="p-5 pb-3">
+        <div className="flex justify-between items-start">
+          <div>
+            <p className="text-xs text-gray-500 font-medium">
+              Account Balance
+            </p>
+            <h2 className="text-3xl font-bold text-gray-900 mt-1">
+              {user.balance.toLocaleString()}
+            </h2>
+            <div className="flex items-center gap-1 mt-1 text-emerald-600">
+              <TrendingUp size={12} />
+              <span className="text-xs font-medium">
+                +{user.totalEarnings.toLocaleString()}
+              </span>
+            </div>
           </div>
+
+          <div className="flex flex-col gap-2 items-end">
+            <Button
+              onClick={() => router.push("/recharge")}
+              className="h-9 px-5 rounded-full bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold"
+            >
+              Recharge
+            </Button>
+            <Button
+              onClick={() => router.push("/withdraw")}
+              variant="outline"
+              className="h-9 px-5 rounded-full border-emerald-200 text-emerald-700 text-xs font-bold hover:bg-emerald-50"
+            >
+              Withdraw
+            </Button>
+          </div>
+        </div>
+
+        {/* Chart */}
+        <div className="h-20 mt-4 -mx-1">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} barCategoryGap="20%">
+              <Bar dataKey="v" radius={[4, 4, 0, 0]}>
+                {chartData.map((_, i) => (
+                  <Cell
+                    key={i}
+                    fill={
+                      i === chartData.length - 1 ? "#10b981" : "#d1fae5"
+                    }
+                  />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </Card>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 gap-4">
-        <Card className="p-4">
-          <p className="text-xs text-gray-500">Equipment</p>
-          <h3 className="text-xl font-bold mt-1">{user.equipment.length}</h3>
-        </Card>
-        <Card className="p-4">
-          <p className="text-xs text-gray-500">Total earnings</p>
-          <h3 className="text-xl font-bold mt-1 text-emerald-600">{user.totalEarnings.toFixed(2)}</h3>
-        </Card>
-      </div>
-
-      {/* Quick Links */}
+      {/* Two Stat Cards */}
       <div className="grid grid-cols-2 gap-3">
-        <Button variant="outline" className="h-12 justify-start text-sm" onClick={() => router.push("/history")}>
-          <History size={16} className="mr-2 text-emerald-600" /> History
-        </Button>
-        <Button variant="outline" className="h-12 justify-start text-sm" onClick={() => router.push("/team")}>
-          <Users size={16} className="mr-2 text-emerald-600" /> My Team
-        </Button>
+        <Card className="p-4">
+          <p className="text-xs text-gray-500 font-medium">Equipment</p>
+          <h3 className="text-2xl font-bold text-gray-900 mt-1">
+            {user.equipment.length}
+          </h3>
+        </Card>
+        <Card className="p-4">
+          <p className="text-xs text-gray-500 font-medium">Total earnings</p>
+          <h3 className="text-2xl font-bold text-emerald-600 mt-1">
+            {user.totalEarnings.toLocaleString()}
+          </h3>
+        </Card>
       </div>
 
-      {/* My Devices */}
-      <div>
-        <h3 className="font-bold text-gray-800 mb-3">My device</h3>
-        {user.equipment.length === 0 ? (
-          <Card className="p-6 text-center text-gray-500 text-sm">
-            No active devices. <span className="text-emerald-600 cursor-pointer" onClick={() => router.push("/equipment")}>Acquire one now</span>
-          </Card>
-        ) : (
-          <div className="space-y-4">
-            {user.equipment.map((eq) => {
-              // Calculate ROI: (Total Earnings / Buy Price) * 100
-              // Note: We don't have an individual totalEarnings per equipment yet, 
-              // so we will estimate it based on days passed or just use a placeholder if not stored.
-              // For this demo, let's assume totalEarnings for this specific eq is calculated or stored.
-              // Let's estimate ROI based on the daily earning * 150 days / price
-              const maxEarnings = eq.dailyEarning * 150;
-              const roi = ((maxEarnings / eq.buyPrice) * 100).toFixed(0);
-
-              return (
-                <Card key={eq.id} className="overflow-hidden">
-                  <div className="h-32 bg-gray-200 w-full">
-                    <img src={EQUIPMENT_CATALOG.find(e => e.id === eq.equipmentId)?.image} alt={eq.name} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="p-4 space-y-3">
-                    <div className="flex justify-between items-center">
-                      <h4 className="font-bold">{eq.name}</h4>
-                      <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full font-bold">ROI {roi}%</span>
-                    </div>
-                    <div className="flex justify-between text-xs text-gray-500">
-                      <span>{eq.buyPrice} RWF · 150 Day</span>
-                      <span className="text-emerald-600 font-medium">+{eq.dailyEarning} RWF/day</span>
-                    </div>
-                    <div className="flex justify-between items-center pt-2 border-t text-sm">
-                      <span className="text-gray-500">Status</span>
-                      <span className="flex items-center gap-1 text-emerald-600 font-medium">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500"></span> {eq.status}
-                      </span>
-                    </div>
-                  </div>
-                </Card>
-              );
-            })}
+      {/* Need Help Card */}
+      <Card className="relative overflow-hidden p-5 border-none bg-gradient-to-br from-emerald-700 to-emerald-800">
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">
+          <div className="w-16 h-16 rounded-full border-2 border-white/40 flex items-center justify-center">
+            <Lightbulb size={28} className="text-white" />
           </div>
-        )}
+        </div>
+
+        <div className="relative">
+          <h3 className="text-lg font-bold text-white">Need Help?</h3>
+          <Button
+            onClick={() => router.push("/contact")}
+            className="mt-3 bg-white/15 hover:bg-white/25 backdrop-blur text-white border-none rounded-full h-9 px-5 text-xs font-bold"
+          >
+            Contact Expert
+          </Button>
+        </div>
+      </Card>
+
+      {/* My Device Section */}
+      <div>
+        <div className="flex justify-between items-center mb-3">
+          <div className="flex items-center gap-2">
+            <Cpu size={16} className="text-emerald-600" />
+            <h3 className="font-bold text-gray-800 text-sm">My device</h3>
+          </div>
+          <span
+            className="text-emerald-600 text-xs font-medium cursor-pointer"
+            onClick={() => router.push("/equipment")}
+          >
+            Acquire equipment
+          </span>
+        </div>
+
+        <Card className="overflow-hidden p-0">
+          {/* Table Header */}
+          <div className="grid grid-cols-3 px-4 py-3 bg-gray-50 border-b border-gray-100 text-[11px] font-medium text-gray-500">
+            <span>Type</span>
+            <span className="text-center">Status</span>
+            <span className="text-right">Income</span>
+          </div>
+
+          {/* Table Body */}
+          {hasDevices ? (
+            user.equipment.slice(0, 3).map((eq) => (
+              <div
+                key={eq.id}
+                className="grid grid-cols-3 px-4 py-4 border-b border-gray-50 last:border-0 items-center"
+              >
+                <span className="text-xs font-medium text-gray-800 truncate pr-2">
+                  {eq.name}
+                </span>
+                <div className="flex justify-center">
+                  <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-md font-bold">
+                    {eq.status}
+                  </span>
+                </div>
+                <span className="text-xs font-bold text-gray-800 text-right">
+                  {eq.dailyEarning.toLocaleString()}
+                </span>
+              </div>
+            ))
+          ) : (
+            <div className="px-4 py-8 text-center text-xs text-gray-400">
+              No active devices yet
+            </div>
+          )}
+        </Card>
+      </div>
+
+      {/* Account Settings Section */}
+      <div>
+        <div className="flex items-center gap-2 mb-3">
+          <Sun size={16} className="text-emerald-600" />
+          <h3 className="font-bold text-gray-800 text-sm">
+            Account Settings
+          </h3>
+        </div>
+
+        <Card className="p-0 overflow-hidden">
+          <div
+            onClick={() => router.push("/history")}
+            className="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-md bg-emerald-50 flex items-center justify-center">
+                <FileText size={16} className="text-emerald-600" />
+              </div>
+              <div>
+                <p className="font-bold text-sm text-gray-800">Records</p>
+                <p className="text-[11px] text-gray-500">
+                  View transaction history
+                </p>
+              </div>
+            </div>
+            <ArrowRight size={16} className="text-gray-300" />
+          </div>
+        </Card>
       </div>
     </div>
   );

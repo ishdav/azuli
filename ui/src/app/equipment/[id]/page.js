@@ -36,7 +36,7 @@ export default function EquipmentDetail() {
         <h1 className="text-lg font-bold">Equipment Details</h1>
       </div>
 
-      <div className="w-full h-48 bg-gray-200 rounded-xl overflow-hidden">
+      <div className="w-full h-48 bg-gray-200 rounded-md overflow-hidden">
         <img src={equipment.image} alt={equipment.name} className="w-full h-full object-cover" />
       </div>
 
@@ -64,8 +64,8 @@ export default function EquipmentDetail() {
           </div>
         </div>
 
-        <Button 
-          onClick={handleBuy} 
+        <Button
+          onClick={handleBuy}
           disabled={loading || user.balance < equipment.price}
           className={`w-full py-6 text-lg font-bold ${user.balance < equipment.price ? 'bg-gray-300 text-gray-500' : 'bg-orange-500 hover:bg-orange-600 text-white'}`}
         >
