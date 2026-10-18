@@ -4,9 +4,8 @@ import { cn } from "@/lib/utils"
 function Card({ className, ...props }) {
   return (
     <div
-      data-slot="card"
       className={cn(
-        "bg-card text-card-foreground flex flex-col gap-6 rounded-md border py-6 shadow-sm",
+        "bg-card text-card-foreground flex flex-col gap-6 rounded-lg border border-border/50 shadow-sm transition-all duration-300 hover:shadow-md animate-slide-up",
         className
       )}
       {...props}

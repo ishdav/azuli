@@ -1,5 +1,5 @@
 "use client";
-import { useApp, EQUIPMENT_CATALOG } from "@/context/AppContext";
+import { useApp, PLANS_CATALOG } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import AppMenu from "@/components/AppMenu";
@@ -34,7 +34,7 @@ export default function EquipmentPage() {
       {/* Equipment List */}
       <EquipmentList
         title="All Equipment"
-        items={EQUIPMENT_CATALOG}
+        items={PLANS_CATALOG}
         showSeeAll={false}
         layout="grid"
       />

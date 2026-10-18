@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Copy, CheckCircle2 } from "lucide-react";
+import Loader from "@/components/Loader";
 
 export default function RechargePage() {
   const { user, recharge } = useApp();
@@ -38,9 +39,9 @@ export default function RechargePage() {
 
       {step === 1 && (
         <>
-          <Card className="p-6 text-center border-emerald-100 bg-emerald-50/50">
+          <Card className="p-6 text-center border-purple-100 bg-purple-50/50">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-1 rounded">CREDIT TOP-UP</span>
+              <span className="text-xs font-bold text-purple-700 bg-purple-100 px-2 py-1 rounded">CREDIT TOP-UP</span>
               <span className="text-2xl">⚡</span>
             </div>
             <h2 className="text-xl font-bold text-gray-800">FUND YOUR NODE</h2>
@@ -56,7 +57,7 @@ export default function RechargePage() {
             <div className="flex items-center justify-between bg-gray-50 border rounded-md p-2">
               <Button variant="ghost" size="icon" onClick={() => setAmount(Math.max(0, amount - 5000))}>-</Button>
               <div className="text-center">
-                <p className="text-xs text-emerald-600 font-bold">RWF</p>
+                <p className="text-xs text-purple-600 font-bold">RWF</p>
                 <input
                   type="number"
                   className="text-3xl font-bold text-center w-32 bg-transparent outline-none"
@@ -69,13 +70,13 @@ export default function RechargePage() {
             </div>
 
             <div className="flex justify-between text-xs text-gray-500 font-medium">
-              <span className="text-emerald-600 border-b-2 border-emerald-600 pb-1">10000</span>
+              <span className="text-purple-600 border-b-2 border-purple-600 pb-1">10000</span>
               <span>30000</span>
               <span>90000</span>
               <span>270000</span>
             </div>
 
-            <Button onClick={handleFund} className="w-full bg-emerald-700 hover:bg-emerald-800 text-white py-6 text-lg">
+            <Button onClick={handleFund} className="w-full bg-purple-700 hover:bg-purple-800 text-white py-6 text-lg">
               <span className="mr-2">▶</span> FUND ACCOUNT
             </Button>
 
@@ -94,7 +95,7 @@ export default function RechargePage() {
       {step === 2 && (
         <Card className="p-6 space-y-6">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-emerald-600 mb-2">RWF {amount}</h2>
+            <h2 className="text-3xl font-bold text-purple-600 mb-2">RWF {amount}</h2>
             <p className="text-sm text-gray-500">Please select payment wallet</p>
           </div>
 
@@ -108,14 +109,14 @@ export default function RechargePage() {
               <p className="font-bold text-gray-800">Step 1</p>
               <p className="text-gray-600">Copy the wallet account:</p>
               <div className="flex justify-between items-center bg-white p-2 rounded border mt-1">
-                <span className="font-bold text-emerald-600">MTN 0796714456</span>
-                <Button size="sm" className="bg-emerald-600 h-6 text-[10px]" onClick={() => navigator.clipboard.writeText("0796714456")}>Copy</Button>
+                <span className="font-bold text-purple-600">MTN 0796714456</span>
+                <Button size="sm" className="bg-purple-600 h-6 text-[10px]" onClick={() => navigator.clipboard.writeText("0796714456")}>Copy</Button>
               </div>
             </div>
             <div>
               <p className="font-bold text-gray-800">Step 2</p>
               <p className="text-gray-600">Transfer to the wallet account above</p>
-              <p className="text-xs text-emerald-600 font-mono mt-1">*182*1*1*0796714456*{amount}#</p>
+              <p className="text-xs text-purple-600 font-mono mt-1">*182*1*1*0796714456*{amount}#</p>
             </div>
             <div>
               <p className="font-bold text-gray-800">Step 3</p>
@@ -124,7 +125,7 @@ export default function RechargePage() {
             </div>
           </div>
 
-          <Button onClick={confirmPayment} className="w-full bg-emerald-700 hover:bg-emerald-800 text-white py-6">
+          <Button onClick={confirmPayment} className="w-full bg-purple-700 hover:bg-purple-800 text-white py-6">
             Submit
           </Button>
           <p className="text-[10px] text-center text-gray-500">Payment processing takes 2-10 minutes. If not processed, please check your payment SMS.</p>

@@ -1,5 +1,5 @@
 "use client";
-import { useApp, EQUIPMENT_CATALOG } from "@/context/AppContext";
+import { useApp, PLANS_CATALOG } from "@/context/AppContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRouter, useParams } from "next/navigation";
@@ -12,7 +12,7 @@ export default function EquipmentDetail() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const equipment = EQUIPMENT_CATALOG.find(e => e.id === id);
+  const equipment = PLANS_CATALOG.find(e => e.id === id);
 
   if (!user || !equipment) return <div className="p-6 text-center">Equipment not found</div>;
 
@@ -46,13 +46,13 @@ export default function EquipmentDetail() {
             <h2 className="text-xl font-bold">{equipment.name}</h2>
             <p className="text-sm text-gray-500">150 Day Cycle</p>
           </div>
-          <Zap className="text-emerald-500" size={24} />
+          <Zap className="text-purple-500" size={24} />
         </div>
 
         <div className="space-y-3 pt-4 border-t">
           <div className="flex justify-between text-sm">
             <span className="text-gray-500">Daily earnings</span>
-            <span className="font-bold text-emerald-600">+{equipment.dailyEarning} RWF/day</span>
+            <span className="font-bold text-purple-600">+{equipment.dailyEarning} RWF/day</span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-gray-500">Unit Price</span>

@@ -57,10 +57,10 @@ export default function ContactPage() {
       </div>
 
       {/* Header Banner */}
-      <Card className="p-6 bg-gradient-to-br from-emerald-700 to-emerald-500 text-white border-none">
+      <Card className="p-6 bg-gradient-to-br from-purple-700 to-purple-500 text-white border-none">
         <h2 className="text-2xl font-bold">How can we help?</h2>
-        <div className="flex items-center gap-2 mt-2 text-emerald-100 text-xs">
-          <span className="w-2 h-2 rounded-full bg-emerald-300"></span>
+        <div className="flex items-center gap-2 mt-2 text-purple-100 text-xs">
+          <span className="w-2 h-2 rounded-full bg-purple-300"></span>
           Online · 09:00 – 18:00
         </div>
       </Card>
@@ -84,7 +84,7 @@ export default function ContactPage() {
       {/* Notice */}
       <Card className="p-4 space-y-2">
         <div className="flex items-center gap-2">
-          <Info size={18} className="text-emerald-600" />
+          <Info size={18} className="text-purple-600" />
           <h4 className="font-bold text-sm">Notice</h4>
         </div>
         <ul className="text-xs text-gray-600 space-y-2 list-decimal pl-4">

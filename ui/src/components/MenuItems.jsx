@@ -27,14 +27,14 @@ export default function MenuItem({
         {Icon && (
           <Icon
             size={20}
-            className={danger ? "text-red-500" : "text-emerald-600"}
+            className={danger ? "text-red-500" : "text-purple-600"}
           />
         )}
         <span className="font-medium text-sm">{label}</span>
       </div>
       <div className="flex items-center gap-2">
         {badge && (
-          <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold">
+          <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-bold">
             {badge}
           </span>
         )}

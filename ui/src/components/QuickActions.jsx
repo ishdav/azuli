@@ -10,14 +10,14 @@ export default function QuickActions() {
     <div className="grid grid-cols-2 gap-4">
       <Button
         onClick={() => router.push("/equipment")}
-        className="h-14 bg-emerald-800 hover:bg-emerald-900 text-white"
+        className="h-14 bg-purple-800 hover:bg-purple-900 text-white"
       >
         <ShoppingCart className="mr-2" size={18} /> Acquire equipment
       </Button>
       <Button
         onClick={() => router.push("/recharge")}
         variant="outline"
-        className="h-14 border-emerald-200 text-emerald-800 hover:bg-emerald-50"
+        className="h-14 border-purple-200 text-purple-800 hover:bg-purple-50"
       >
         <Wallet className="mr-2" size={18} /> Recharge
       </Button>

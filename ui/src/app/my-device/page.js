@@ -1,12 +1,12 @@
 "use client";
-import { useApp, EQUIPMENT_CATALOG } from "@/context/AppContext";
+import { useApp, PLANS_CATALOG } from "@/context/AppContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Cpu } from "lucide-react";
 import { useEffect } from "react";
 import StatCard from "@/components/StatCard";
-import DeviceCard from "@/components/DeviceCard";
+import DeviceCard from "@/components/NodeCard";
 
 export default function MyDevicePage() {
   const { user } = useApp();
@@ -61,8 +61,8 @@ export default function MyDevicePage() {
         <div className="flex justify-between items-center mb-3">
           <h3 className="font-bold text-gray-800">My device</h3>
           {deviceCount > 0 && (
-            <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-1 rounded-md font-bold flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span className="text-[10px] bg-purple-100 text-purple-700 px-2 py-1 rounded-md font-bold flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
               {deviceCount} Device running
             </span>
           )}
@@ -74,7 +74,7 @@ export default function MyDevicePage() {
             <p className="text-gray-500 text-sm">No active devices yet.</p>
             <Button
               onClick={() => router.push("/equipment")}
-              className="mt-4 bg-emerald-700 hover:bg-emerald-800 text-white"
+              className="mt-4 bg-purple-700 hover:bg-purple-800 text-white"
             >
               Acquire Equipment
             </Button>
@@ -82,7 +82,7 @@ export default function MyDevicePage() {
         ) : (
           <div className="space-y-4">
             {user.equipment.map((eq) => {
-              const catalogItem = EQUIPMENT_CATALOG.find(
+              const catalogItem = PLANS_CATALOG.find(
                 (c) => c.id === eq.equipmentId
               );
               return (

@@ -31,16 +31,16 @@ export default function CheckInPage() {
         <h1 className="text-xl font-bold">Check-in</h1>
       </div>
 
-      <Card className="p-6 bg-emerald-800 text-white relative overflow-hidden border-none">
+      <Card className="p-6 bg-purple-800 text-white relative overflow-hidden border-none">
         <div className="relative z-10">
-          <p className="text-emerald-200 text-sm mb-1">{tomorrow}</p>
+          <p className="text-purple-200 text-sm mb-1">{tomorrow}</p>
           <div className="flex items-end gap-2">
             <h2 className="text-5xl font-bold">200</h2>
-            <span className="text-emerald-200 text-lg mb-1">RWF</span>
+            <span className="text-purple-200 text-lg mb-1">RWF</span>
           </div>
-          <p className="text-emerald-200 text-sm mt-4">7 Days</p>
+          <p className="text-purple-200 text-sm mt-4">7 Days</p>
         </div>
-        <div className="absolute right-[-20px] top-[-20px] w-32 h-32 border-4 border-emerald-600 rounded-full opacity-50"></div>
+        <div className="absolute right-[-20px] top-[-20px] w-32 h-32 border-4 border-purple-600 rounded-full opacity-50"></div>
       </Card>
 
       <div className="grid grid-cols-2 gap-4">
@@ -54,16 +54,16 @@ export default function CheckInPage() {
         </Card>
       </div>
 
-      <Button 
-        onClick={handleCheckIn} 
+      <Button
+        onClick={handleCheckIn}
         disabled={hasCheckedIn}
-        className={`w-full py-6 text-lg font-bold ${hasCheckedIn ? 'bg-gray-200 text-gray-500' : 'bg-emerald-600 hover:bg-emerald-700 text-white'}`}
+        className={`w-full py-6 text-lg font-bold ${hasCheckedIn ? 'bg-gray-200 text-gray-500' : 'bg-purple-600 hover:bg-purple-700 text-white'}`}
       >
         {hasCheckedIn ? "ALREADY CHECKED IN TODAY" : "NODE SYNCED - CHECK IN NOW"}
       </Button>
 
       <Card className="p-4 space-y-4">
-        <h3 className="font-bold flex items-center gap-2"><CheckCircle2 size={18} className="text-emerald-600"/> Rule</h3>
+        <h3 className="font-bold flex items-center gap-2"><CheckCircle2 size={18} className="text-purple-600" /> Rule</h3>
         <ul className="text-sm text-gray-600 space-y-3">
           <li className="flex gap-2"><span>1.</span> Shadeform System Notice</li>
           <li className="flex gap-2"><span>2.</span> Automatic System Updates</li>
