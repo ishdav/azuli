@@ -38,6 +38,7 @@ export default function Register() {
               <input
                 className="w-full py-2 outline-none"
                 placeholder="Enter your mobile number"
+                maxlength="9"
                 value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })}
               />
             </div>

@@ -49,6 +49,7 @@ export default function LoginPage() {
             <input
               className="w-full outline-none text-lg font-medium bg-transparent placeholder:text-slate-300"
               placeholder="7XX XXX XXX"
+              maxlength="9"
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
             />
