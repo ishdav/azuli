@@ -2,75 +2,76 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { api, PLANS_CATALOG } from "@/services/api";
 
-// Re-export the catalog so pages can import it from Context
 export { PLANS_CATALOG };
-
 const AppContext = createContext();
 
 export function AppProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
+  // Fetch fresh data from DB
+  const refreshUser = async () => {
+    try {
+      const freshData = await api.getMe();
+      setUser(freshData);
+    } catch (error) {
+      console.error("Failed to sync:", error);
+    }
+  };
+
   useEffect(() => {
-    // Load session from mock API
-    const session = api.getMe();
-    if (session) setUser(session);
-    setIsLoaded(true);
+    const init = async () => {
+      try {
+        const data = await api.getMe();
+        setUser(data);
+      } catch (e) {
+        setUser(null);
+      } finally {
+        setIsLoaded(true);
+      }
+    };
+    init();
   }, []);
 
   const login = async (phone, password) => {
-    const loggedInUser = await api.login(phone, password);
-    setUser(loggedInUser);
-    return loggedInUser;
+    const data = await api.login(phone, password);
+    setUser(data);
   };
 
   const register = async (phone, password, inviteCode) => {
-    const newUser = await api.register(phone, password, inviteCode);
-    setUser(newUser);
-    return newUser;
+    const data = await api.register(phone, password, inviteCode);
+    setUser(data);
   };
 
-  const logout = async () => {
-    await api.logout();
+  const logout = () => {
+    api.logout();
     setUser(null);
   };
 
-  const purchasePlan = async (planId) => {
-    if (!user) throw new Error("Not logged in");
-    const updatedUser = await api.purchasePlan(user.id, planId);
-    setUser(updatedUser);
-    return updatedUser;
+  const recharge = async (amount) => {
+    await api.recharge(amount);
+    await refreshUser(); // Auto-update balance after deposit
   };
 
-  const getDownlines = () => {
-    if (!user) return [];
-    const users = JSON.parse(localStorage.getItem("app_users") || "[]");
-    return users.filter((u) => u.invitedBy === user.id);
+  const withdraw = async (amount) => {
+    const res = await api.withdraw(amount);
+    await refreshUser(); // Auto-update balance after withdraw
+    return res;
+  };
+
+  const purchasePlan = async (plan) => {
+    const res = await api.purchasePlan(plan);
+    await refreshUser(); // Auto-update nodes and balance
+    return res;
   };
 
   return (
-    <AppContext.Provider
-      value={{
-        user,
-        isLoaded,
-        login,
-        register,
-        logout,
-        purchasePlan,
-        getDownlines,
-        PLANS_CATALOG,
-      }}
-    >
+    <AppContext.Provider value={{ 
+      user, isLoaded, login, register, logout, recharge, withdraw, purchasePlan, refreshUser, PLANS_CATALOG 
+    }}>
       {children}
     </AppContext.Provider>
   );
 }
 
-// Guard against missing Provider
-export const useApp = () => {
-  const context = useContext(AppContext);
-  if (context === undefined) {
-    throw new Error("useApp must be used within an AppProvider");
-  }
-  return context;
-};
+export const useApp = () => useContext(AppContext);

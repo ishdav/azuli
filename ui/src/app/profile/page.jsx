@@ -8,7 +8,8 @@ import NodeCard from "@/components/NodeCard";
 import { Card } from "@/components/ui/card";
 import { 
   Activity, ShieldCheck, LogOut, ChevronRight, 
-  Settings, FileText, Zap, Users, CalendarCheck
+  Settings, FileText, Zap, Users, CalendarCheck,
+  User
 } from "lucide-react";
 
 export default function ProfilePage() {
@@ -38,7 +39,7 @@ export default function ProfilePage() {
         {/* User Card */}
         <Card className="p-6 border-none shadow-sm bg-white rounded-3xl flex items-center gap-4">
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-indigo-500/30">
-            {user.phone.slice(-2)}
+            <User />
           </div>
           <div>
             <h2 className="text-lg font-bold text-slate-900">+{user.phone}</h2>

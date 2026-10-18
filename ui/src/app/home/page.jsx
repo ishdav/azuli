@@ -9,15 +9,15 @@ import AppMenu from "@/components/AppMenu";
 import Loader from "@/components/Loader";
 import { 
   ArrowUpRight, ArrowDownLeft, Activity, 
-  ChevronRight, Gift, TrendingUp
+  ChevronRight, Gift, TrendingUp, RefreshCw // <-- Added RefreshCw
 } from "lucide-react";
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer, YAxis } from "recharts";
 
 export default function HomePage() {
-  const { user, isLoaded } = useApp();
+  // <-- Added refreshUser from context
+  const { user, isLoaded, refreshUser } = useApp(); 
   const router = useRouter();
 
-  // 1. ALL HOOKS MUST COME FIRST (Before any return statements)
   useEffect(() => {
     if (isLoaded && !user) router.push("/");
   }, [user, isLoaded, router]);
@@ -36,11 +36,7 @@ export default function HomePage() {
     ];
   }, [user]);
 
-  // 2. CONDITIONAL RETURNS COME AFTER HOOKS
-  if (!isLoaded) {
-    return <Loader message="Syncing portfolio..." />;
-  }
-
+  if (!isLoaded) return <Loader message="Syncing portfolio..." />;
   if (!user) return null;
 
   const recentTransactions = user.transactions?.slice(-3).reverse() || [];
@@ -51,12 +47,24 @@ export default function HomePage() {
       
       <Header 
         title="Dashboard" 
-        rightAction={<AppMenu />} 
+        rightAction={
+          <div className="flex items-center gap-1">
+            {/* SYNC BUTTON */}
+            <button 
+              onClick={refreshUser} 
+              className="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors"
+              title="Sync Balance"
+            >
+              <RefreshCw size={18} />
+            </button>
+            <AppMenu />
+          </div>
+        } 
       />
 
       <main className="p-5 space-y-8 pb-12">
         
-        {/* 1. Hero Balance Card (Light Luxury) */}
+        {/* 1. Hero Balance Card */}
         <div className="relative overflow-hidden rounded-[2rem] bg-slate-50 p-7 shadow-xl shadow-slate-200/50 border border-slate-200/80">
           <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-indigo-200/40 to-transparent rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
           
@@ -115,7 +123,6 @@ export default function HomePage() {
             </button>
           </div>
           
-          {/* Removed bg-gray-100 so the background matches the page */}
           <div className="relative">
             <div className="flex gap-4 overflow-x-auto pb-3 snap-x snap-mandatory premium-scrollbar">
               {PLANS_CATALOG.map((plan) => (
@@ -146,7 +153,6 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
-            
             <div className="absolute top-0 right-0 bottom-3 w-12 bg-gradient-to-l from-slate-50 to-transparent pointer-events-none"></div>
           </div>
         </div>

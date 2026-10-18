@@ -13,8 +13,9 @@ export default function AdminLayout({ children }) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   useEffect(() => {
-    const isAdmin = localStorage.getItem("admin_session") === "true";
-    if (!isAdmin && pathname !== "/admin/login") {
+    const token = localStorage.getItem("admin_token");
+    
+    if (!token && pathname !== "/admin/login") {
       router.push("/admin/login");
     } else {
       setIsAuthorized(true);

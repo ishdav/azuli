@@ -4,7 +4,7 @@ import { useApp } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, ArrowRight } from "lucide-react";
+import { Loader2, ArrowRight, User } from "lucide-react";
 
 export default function LoginPage() {
   const [form, setForm] = useState({ phone: "", password: "" });
@@ -33,7 +33,9 @@ export default function LoginPage() {
     <div className="min-h-screen flex flex-col justify-center p-6 bg-white animate-fade-in">
       <div className="mb-12">
         <div className="w-12 h-12 bg-indigo-600 rounded-xl mb-6 flex items-center justify-center shadow-lg shadow-indigo-600/30">
-          <span className="text-white font-bold text-2xl">A</span>
+          <span className="text-white font-bold text-2xl">
+            <User />
+          </span>
         </div>
         <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Welcome back</h1>
         <p className="text-sm text-slate-500 mt-2">Enter your credentials to access your portfolio.</p>
