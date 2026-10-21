@@ -6,8 +6,17 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 export const instant = false;
 
 export const metadata = {
-  title: "Azuli Wealth | Yield Nodes",
-  description: "Premium AI Yield Aggregation",
+  title: "Azuli Wealth",
+  description: "Private platform",
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
 };
 
 export default function RootLayout({ children }) {
