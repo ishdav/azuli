@@ -81,6 +81,11 @@ export const api = {
     return await request('/users/purchase', { plan });
   },
 
+  // ✅ ADDED: Get Downlines (Referrals) from real backend
+  getDownlines: async () => {
+    return await request('/users/downlines', null, 'GET');
+  },
+
   // Admin Actions
   adminLogin: async (username, password) => {
     const data = await request('/admin/login', { username, password }, 'POST', true);

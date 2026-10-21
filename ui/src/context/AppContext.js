@@ -50,24 +50,44 @@ export function AppProvider({ children }) {
 
   const recharge = async (amount) => {
     await api.recharge(amount);
-    await refreshUser(); // Auto-update balance after deposit
+    await refreshUser(); 
   };
 
   const withdraw = async (amount) => {
     const res = await api.withdraw(amount);
-    await refreshUser(); // Auto-update balance after withdraw
+    await refreshUser(); 
     return res;
   };
 
   const purchasePlan = async (plan) => {
     const res = await api.purchasePlan(plan);
-    await refreshUser(); // Auto-update nodes and balance
+    await refreshUser(); 
     return res;
+  };
+
+  // ✅ ADDED: The missing getDownlines function
+  const getDownlines = async () => {
+    try {
+      return await api.getDownlines();
+    } catch (error) {
+      console.error("Failed to fetch downlines:", error);
+      return [];
+    }
   };
 
   return (
     <AppContext.Provider value={{ 
-      user, isLoaded, login, register, logout, recharge, withdraw, purchasePlan, refreshUser, PLANS_CATALOG 
+      user, 
+      isLoaded, 
+      login, 
+      register, 
+      logout, 
+      recharge, 
+      withdraw, 
+      purchasePlan, 
+      refreshUser, 
+      getDownlines, // ✅ ADDED to the provider value
+      PLANS_CATALOG 
     }}>
       {children}
     </AppContext.Provider>

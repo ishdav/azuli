@@ -13,15 +13,22 @@ export default function TeamPage() {
   const router = useRouter();
   const [downlines, setDownlines] = useState([]);
   const [copied, setCopied] = useState(false);
+  const [loadingDownlines, setLoadingDownlines] = useState(true);
 
   useEffect(() => {
     if (isLoaded && !user) router.push("/");
   }, [user, isLoaded, router]);
 
+  // Fetch downlines from backend
   useEffect(() => {
-    if (user) {
-      setDownlines(getDownlines());
-    }
+    const fetchDownlines = async () => {
+      if (user) {
+        const data = await getDownlines();
+        setDownlines(data);
+        setLoadingDownlines(false);
+      }
+    };
+    fetchDownlines();
   }, [user, getDownlines]);
 
   const copyCode = useCallback(() => {
@@ -31,14 +38,14 @@ export default function TeamPage() {
     setTimeout(() => setCopied(false), 2000);
   }, [user]);
 
-  if (!isLoaded) {
+  if (!isLoaded || loadingDownlines) {
     return <Loader message="Loading your network..." />;
   }
 
   if (!user) return null;
 
-  const directInvites = downlines.filter((d) => d.invitedBy === user.id);
-  const totalBonus = directInvites.length * 2500;
+  // Since the backend already filters by direct invites, we just use downlines.length
+  const totalBonus = downlines.length * 2500;
 
   return (
     <div className="animate-fade-in bg-slate-50 min-h-screen pb-24">
@@ -47,9 +54,8 @@ export default function TeamPage() {
 
       <main className="p-5 space-y-6">
         
-        {/* Invitation Code Card (Light Luxury - Matches Home Hero Card) */}
+        {/* Invitation Code Card */}
         <div className="relative overflow-hidden rounded-[2rem] bg-slate-50 p-7 shadow-xl shadow-slate-200/50 border border-slate-200/80">
-          {/* Subtle, soft ambient glow */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-indigo-200/40 to-transparent rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
           
           <div className="relative z-10">
@@ -61,7 +67,6 @@ export default function TeamPage() {
                 </p>
               </div>
               
-              {/* Minimalist Copy Button */}
               <button 
                 onClick={copyCode}
                 className="text-[10px] text-slate-600 font-medium flex items-center gap-1.5 bg-white shadow-sm border border-slate-100 px-2.5 py-1 rounded-full hover:bg-slate-50 transition-colors"
@@ -80,11 +85,10 @@ export default function TeamPage() {
               </h1>
             </div>
 
-            {/* Info Banner inside card */}
             <div className="flex items-start gap-2 text-[11px] text-slate-600 bg-white shadow-sm border border-slate-100 px-3 py-2.5 rounded-xl">
               <TrendingUp size={14} className="text-emerald-500 flex-shrink-0 mt-0.5" />
               <p>
-                Earn <strong className="text-slate-900">2,500 RWF</strong> per direct invite, and <strong className="text-slate-900">300 RWF</strong> when they invite someone else.
+                Earn <strong className="text-slate-900">2,500 RWF</strong> per direct invite.
               </p>
             </div>
           </div>
@@ -154,7 +158,7 @@ export default function TeamPage() {
                         +{downline.phone}
                       </p>
                       <p className="text-[10px] text-slate-400 mt-0.5">
-                        Joined recently
+                        Joined {new Date(downline.created_at).toLocaleDateString()}
                       </p>
                     </div>
                   </div>

@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, ArrowRight, User } from "lucide-react";
+import Logo from "../../public/logo.svg"
+import Image from "next/image"
 
 export default function LoginPage() {
   const [form, setForm] = useState({ phone: "", password: "" });
@@ -37,7 +39,10 @@ export default function LoginPage() {
             <User />
           </span>
         </div>
-        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Welcome back</h1>
+        <div className="flex">
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Welcome back</h1>
+          <span className="flex float-right"><h1 className="text-3xl font-bold text-slate-900 tracking-tight">Azuli</h1><Image src={Logo} className="w-10 h-10" alt="Logo of Azuli"/></span>
+        </div>
         <p className="text-sm text-slate-500 mt-2">Enter your credentials to access your portfolio.</p>
       </div>
 
@@ -49,7 +54,7 @@ export default function LoginPage() {
             <input
               className="w-full outline-none text-lg font-medium bg-transparent placeholder:text-slate-300"
               placeholder="7XX XXX XXX"
-              maxlength="9"
+              maxLength="9"
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
             />
