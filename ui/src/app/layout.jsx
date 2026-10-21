@@ -1,6 +1,7 @@
 import { AppProvider } from "@/context/AppContext";
 import AppShell from "@/components/AppShell";
 import "./globals.css";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const instant = false;
 

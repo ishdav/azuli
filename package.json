@@ -32,5 +32,8 @@
     "build:server": "npm run build -w server",
     "build": "npm run build --workspaces --if-present",
     "azuli": "npm run dev --workspaces --if-present --parallel"
+  },
+  "dependencies": {
+    "@vercel/speed-insights": "^2.0.0"
   }
 }
