@@ -12,9 +12,9 @@ export default function AppShell({ children }) {
   if (isAdmin) {
     return (
       <div className="w-full h-full overflow-hidden bg-slate-100">
-        <Suspense fallback={<Loader message="Loading admin..." />}>
-          {children}
-        </Suspense>
+      <Suspense fallback={<Loader message="Loading page..." />}>
+       {children}
+      </Suspense>
       </div>
     );
   }

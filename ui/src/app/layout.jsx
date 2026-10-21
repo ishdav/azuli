@@ -2,8 +2,6 @@ import { AppProvider } from "@/context/AppContext";
 import AppShell from "@/components/AppShell";
 import "./globals.css";
 
-// ✅ Prevent static generation (fixes the /checkin prerender error)
-export const dynamic = 'force-dynamic';
 export const instant = false;
 
 export const metadata = {
