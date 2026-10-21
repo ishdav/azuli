@@ -24,7 +24,7 @@ export default function Register() {
   return (
     <div className="p-6 h-screen flex flex-col justify-center bg-purple-800 text-white rounded-b-[40px] shadow-lg">
       <div className="mb-10 text-center">
-        <h1 className="text-3xl font-bold">AI computing power equipment</h1>
+        <h1 className="text-3xl font-bold"> Computing power equipment</h1>
         <p className="text-purple-200 mt-2 text-sm">Deploy your first node in 60 seconds</p>
       </div>
 
