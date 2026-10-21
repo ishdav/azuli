@@ -91,7 +91,13 @@ function PlanDetailContent() {
 
 export default function PlanDetail() {
   return (
-    <Suspense fallback={<div className="h-screen flex items-center justify-center"><Loader2 className="animate-spin text-indigo-600" /></div>}>
+        <Suspense 
+      fallback={
+        <div className="h-screen flex items-center justify-center">
+          <Loader2 className="animate-spin text-indigo-600" size={40} />
+        </div>
+      }
+    >
       <PlanDetailContent />
     </Suspense>
   );
