@@ -12,12 +12,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      
+      # 1. Install dependencies inside the server folder
       - run: npm install
         working-directory: ./server
+      
+      # 2. Run the payout script, passing the secrets as environment variables
       - run: node cron/dailyPayout.js
         working-directory: ./server
         env:
           DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME: ${{ secrets.DB_NAME }}
