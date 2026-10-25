@@ -21,7 +21,7 @@ export default function WithdrawPage() {
   if (!isLoaded || !user) return null;
 
   const numericAmount = parseFloat(amount) || 0;
-  const tax = numericAmount * 0.15;
+  const tax = numericAmount * 0.20;
   const finalAmount = numericAmount - tax;
   const canWithdraw = numericAmount >= 3000 && numericAmount <= user.balance;
 
@@ -67,7 +67,7 @@ export default function WithdrawPage() {
 
           <div className="bg-slate-50 rounded-2xl p-4 space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-slate-500">Tax (15%)</span>
+              <span className="text-slate-500">Tax (20%)</span>
               <span className="font-bold text-rose-500">-{tax.toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-sm border-t border-slate-200 pt-2">

@@ -87,8 +87,11 @@ export const deposit = async (req, res) => {
 
 // @desc    Withdraw funds
 // @route   POST /api/users/withdraw
+// @desc    Withdraw funds
+// @route   POST /api/users/withdraw
 export const withdraw = async (req, res) => {
-  const { amount } = req.body;
+  const { amount, phoneNumber, network } = req.body; // We will use phone/network for Flutterwave later
+  
   if (amount < 3000) return res.status(400).json({ message: 'Minimum withdrawal is 3,000 RWF' });
 
   const connection = await pool.getConnection();
@@ -98,10 +101,11 @@ export const withdraw = async (req, res) => {
     const [users] = await connection.query('SELECT balance FROM users WHERE id = ?', [req.user.id]);
     if (users[0].balance < amount) throw new Error('Insufficient balance');
 
-    const tax = amount * 0.15;
+    // ✅ CHANGED TO 20%
+    const tax = amount * 0.20; 
     const finalAmount = amount - tax;
 
-    // Deduct the full amount from balance
+    // Deduct the FULL amount from balance
     await connection.query('UPDATE users SET balance = balance - ? WHERE id = ?', [amount, req.user.id]);
     
     // Log the transaction
