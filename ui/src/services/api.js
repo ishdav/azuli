@@ -1,6 +1,6 @@
 // ui/src/services/api.js
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 const isClient = typeof window !== "undefined";
 const getSession = () => isClient ? JSON.parse(localStorage.getItem("app_session") || "null") : null;
