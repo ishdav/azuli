@@ -3,7 +3,7 @@ name: Daily Yield Payout
 on:
   schedule:
     - cron: '0 0 * * *' # Runs every day at midnight UTC
-  workflow_dispatch: # This allows you to manually click "Run workflow" for testing
+  workflow_dispatch: # This allows you to manually click"Run workflow" for testing
 
 jobs:
   payout:
