@@ -41,7 +41,6 @@ export default function LoginPage() {
         </div>
         <div className="flex">
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Welcome back</h1>
-          <span className="flex float-right"><h1 className="text-3xl font-bold text-slate-900 tracking-tight">Azuli</h1><Image src={Logo} className="w-10 h-10" alt="Logo of Azuli"/></span>
         </div>
         <p className="text-sm text-slate-500 mt-2">Enter your credentials to access your portfolio.</p>
       </div>
