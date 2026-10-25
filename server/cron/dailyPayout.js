@@ -9,13 +9,15 @@ export const processDailyPayouts = async () => {
   try {
     await connection.beginTransaction();
 
-    // 1. Get all active nodes
+    // 1. Get all active nodes (FIXED: using ? placeholder)
     const [nodes] = await connection.query(
-      'SELECT id, user_id, daily_yield FROM nodes WHERE status = "Active"'
+      'SELECT id, user_id, daily_yield FROM nodes WHERE status = ?',
+      ['Active']
     );
 
     if (nodes.length === 0) {
       console.log("No active nodes to process.");
+      await connection.commit();
       return;
     }
 
@@ -43,7 +45,7 @@ export const processDailyPayouts = async () => {
     console.error("❌ Payout failed:", error.message);
   } finally {
     connection.release();
-    process.exit(0); // Important: Exit the process so Render knows the job is done
+    process.exit(0); // Important: Exit the process so Render/GitHub knows the job is done
   }
 };
 
