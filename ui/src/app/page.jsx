@@ -3,10 +3,9 @@ import { useState, useEffect } from "react";
 import { useApp } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Loader2, ArrowRight, User } from "lucide-react";
-import Logo from "../../public/logo.svg"
-import Image from "next/image"
+import { Loader2, ArrowRight, TrendingUp } from "lucide-react";
+import Image from "next/image";
+import Logo from "../../public/logo.svg"; // Adjust path if necessary
 
 export default function LoginPage() {
   const [form, setForm] = useState({ phone: "", password: "" });
@@ -32,13 +31,27 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center p-6 bg-white animate-fade-in">
-      <div className="mb-12">
+    // Added 'relative' to the main container for absolute positioning
+    <div className="relative min-h-screen flex flex-col justify-center p-6 bg-white animate-fade-in">
+      
+      {/* ✅ Top Right Branding (Logo + Name) */}
+      <div className="absolute top-6 right-6 flex items-center gap-2">
+        <Image 
+          src={Logo} 
+          alt="Azuli Logo" 
+          width={32} 
+          height={32} 
+          className="w-8 h-8 object-contain" 
+        />
+        <span className="font-bold text-xl text-slate-900 tracking-tight">Azuli</span>
+      </div>
+
+      <div className="mb-12 mt-10">
+        {/* Changed the icon to something more premium */}
         <div className="w-12 h-12 bg-indigo-600 rounded-xl mb-6 flex items-center justify-center shadow-lg shadow-indigo-600/30">
-          <span className="text-white font-bold text-2xl">
-            <User />
-          </span>
+          <TrendingUp className="text-white" size={24} />
         </div>
+        
         <div className="flex">
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Welcome back</h1>
         </div>
