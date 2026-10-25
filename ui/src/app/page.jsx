@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useApp } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Loader2, ArrowRight, TrendingUp } from "lucide-react";
+import { Loader2, ArrowRight, User } from "lucide-react";
 import Image from "next/image";
 import Logo from "../../public/logo.svg"; // Adjust path if necessary
 
@@ -49,7 +49,7 @@ export default function LoginPage() {
       <div className="mb-12 mt-10">
         {/* Changed the icon to something more premium */}
         <div className="w-12 h-12 bg-indigo-600 rounded-xl mb-6 flex items-center justify-center shadow-lg shadow-indigo-600/30">
-          <TrendingUp className="text-white" size={24} />
+          <User className="text-white" size={24} />
         </div>
         
         <div className="flex">
