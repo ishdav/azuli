@@ -20,7 +20,7 @@ export const getMe = async (req, res) => {
     
     const u = users[0];
     
-    // Fetch user's nodes to send to frontend
+    // Fetch Nodes
     const [nodes] = await pool.query('SELECT * FROM nodes WHERE user_id = ?', [req.user.id]);
     const formattedNodes = nodes.map(n => ({
       id: n.id,
@@ -32,13 +32,27 @@ export const getMe = async (req, res) => {
       status: n.status
     }));
 
+    // ✅ FIX: Fetch Transactions and map them to frontend schema
+    const [transactions] = await pool.query(
+      'SELECT id, type, amount, status, created_at FROM transactions WHERE user_id = ? ORDER BY created_at DESC', 
+      [req.user.id]
+    );
+    const formattedTransactions = transactions.map(t => ({
+      id: t.id,
+      type: t.type,
+      amount: parseFloat(t.amount),
+      status: t.status,
+      date: t.created_at // Frontend expects "date", DB has "created_at"
+    }));
+
     res.json({
       id: u.id,
       phone: u.phone,
       inviteCode: u.invite_code,
       balance: parseFloat(u.balance),
       totalYield: parseFloat(u.total_yield),
-      nodes: formattedNodes
+      nodes: formattedNodes,
+      transactions: formattedTransactions // ✅ Send them to the frontend
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
