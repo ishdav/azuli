@@ -59,9 +59,9 @@ export function AppProvider({ children }) {
     return res;
   };
 
-  const purchasePlan = async (plan) => {
-    const res = await api.purchasePlan(plan);
-    await refreshUser(); 
+    const purchasePlan = async (planId) => {
+    const res = await api.purchasePlan(planId);
+    await refreshUser(); // Auto-update nodes and balance
     return res;
   };
 

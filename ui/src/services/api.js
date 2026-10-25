@@ -77,8 +77,8 @@ export const api = {
     return await request('/users/withdraw', { amount });
   },
 
-  purchasePlan: async (plan) => {
-    return await request('/users/purchase', { plan });
+    purchasePlan: async (planId) => {
+    return await request('/users/purchase', { planId });
   },
 
   // ✅ ADDED: Get Downlines (Referrals) from real backend

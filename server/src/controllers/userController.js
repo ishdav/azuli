@@ -1,6 +1,16 @@
 import crypto from 'crypto';
 import { pool } from '../db.js';
 
+// ✅ SECURITY: Backend is the source of truth for prices
+const PLANS_CATALOG = [
+  { id: 'plan_starter', name: 'Starter Yield Node', price: 10000, dailyYield: 1200 },
+  { id: 'plan_pro', name: 'Pro Yield Node', price: 30000, dailyYield: 4500 },
+  { id: 'plan_elite', name: 'Elite Yield Node', price: 90000, dailyYield: 15000 },
+  { id: 'plan_quantum', name: 'Quantum Yield Node', price: 150000, dailyYield: 26000 },
+  { id: 'plan_enterprise', name: 'Enterprise Yield Node', price: 250000, dailyYield: 45000 },
+  { id: 'plan_vip', name: 'VIP Yield Node', price: 500000, dailyYield: 95000 },
+];
+
 // @desc    Get current user profile (Used for Syncing)
 // @route   GET /api/users/me
 export const getMe = async (req, res) => {
@@ -99,8 +109,12 @@ export const withdraw = async (req, res) => {
 // @desc    Purchase a yield node
 // @route   POST /api/users/purchase
 export const purchasePlan = async (req, res) => {
-  const { plan } = req.body; // We pass the plan object from frontend to avoid importing catalog here
+  const { planId } = req.body; // ✅ Only receive the ID, not the whole object
   
+  // 1. Look up the plan on the server (prevents price tampering)
+  const plan = PLANS_CATALOG.find(p => p.id === planId);
+  if (!plan) return res.status(404).json({ message: 'Plan not found' });
+
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
@@ -111,7 +125,7 @@ export const purchasePlan = async (req, res) => {
     // Deduct balance
     await connection.query('UPDATE users SET balance = balance - ? WHERE id = ?', [plan.price, req.user.id]);
     
-    // Create node
+    // Create node using trusted server-side plan data
     await connection.query(
       'INSERT INTO nodes (id, user_id, plan_id, name, buy_price, daily_yield) VALUES (?, ?, ?, ?, ?, ?)',
       [crypto.randomUUID(), req.user.id, plan.id, plan.name, plan.price, plan.dailyYield]
