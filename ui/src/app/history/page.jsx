@@ -16,8 +16,8 @@ export default function HistoryPage() {
 
   if (!isLoaded || !user) return null;
 
-  const withdrawals = user.transactions?.filter(t => t.type === "Withdraw") || [];
-
+// Inside HistoryPage
+const withdrawals = user.transactions?.filter((t) => t.type === "Withdraw") || [];
   return (
     <div className="animate-fade-in bg-slate-50 min-h-screen pb-32">
       <Header title="Transaction History" showBack />
