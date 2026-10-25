@@ -38,7 +38,20 @@ export const getAdminStats = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
   try {
-    const [users] = await pool.query('SELECT id, phone, invite_code, balance, total_yield, created_at FROM users');
+    // ✅ FIX: Use a subquery to count nodes for each user
+    const [users] = await pool.query(`
+      SELECT 
+        u.id, 
+        u.phone, 
+        u.invite_code, 
+        u.balance, 
+        u.total_yield, 
+        u.created_at,
+        (SELECT COUNT(*) FROM nodes WHERE user_id = u.id) AS node_count
+      FROM users u
+      ORDER BY u.created_at DESC
+    `);
+
     // Map database snake_case to frontend camelCase
     const formattedUsers = users.map(u => ({
       id: u.id,
@@ -46,7 +59,7 @@ export const getAllUsers = async (req, res) => {
       inviteCode: u.invite_code,
       balance: parseFloat(u.balance),
       totalYield: parseFloat(u.total_yield),
-      nodes: [] // We will fetch nodes count later if needed
+      nodeCount: Number(u.node_count) // ✅ Return the real count
     }));
     res.json(formattedUsers);
   } catch (error) {

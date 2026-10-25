@@ -129,7 +129,7 @@ export default function AdminUsersPage() {
                     {/* Nodes Cell */}
                     <TableCell className="py-4 text-center">
                       <span className="inline-flex items-center justify-center w-7 h-7 rounded-md bg-slate-100 text-slate-700 font-bold text-xs">
-                        {user.nodes?.length || 0}
+                        {user.nodeCount || 0}
                       </span>
                     </TableCell>
                     
