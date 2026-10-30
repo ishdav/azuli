@@ -53,7 +53,7 @@ export default function LoginPage() {
         </div>
         
         <div className="flex">
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Welcome back</h1>
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Welcome back to Azuli</h1>
         </div>
         <p className="text-sm text-slate-500 mt-2">Enter your credentials to access your portfolio.</p>
       </div>
