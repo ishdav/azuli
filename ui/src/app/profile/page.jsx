@@ -9,7 +9,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
   Activity, ShieldCheck, LogOut, ChevronRight, 
-  Settings, FileText, Zap, Users, CalendarCheck
+  Settings, FileText, Zap, Users, CalendarCheck, 
+  User
 } from "lucide-react";
 
 export default function ProfilePage() {
@@ -50,7 +51,7 @@ export default function ProfilePage() {
         <Card className="p-6 border-none shadow-sm bg-white rounded-3xl flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-indigo-500/30">
-              {user.phone.slice(-2)}
+              <User size={28} />
             </div>
             <div>
               <h2 className="text-lg font-bold text-slate-900">+{user.phone}</h2>
