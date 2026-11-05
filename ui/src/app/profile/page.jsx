@@ -58,15 +58,6 @@ export default function ProfilePage() {
               <p className="text-xs text-slate-500 mt-1">Invite Code: <span className="font-bold text-indigo-600">{user.inviteCode}</span></p>
             </div>
           </div>
-
-          {/* ✅ Mobile-only Logout Button */}
-          <button 
-            onClick={handleLogout}
-            className="md:hidden p-3 bg-rose-50 text-rose-600 rounded-2xl hover:bg-rose-100 transition-colors flex-shrink-0"
-            title="Log Out"
-          >
-            <LogOut size={20} />
-          </button>
         </Card>
 
         {/* Quick Actions Grid */}
