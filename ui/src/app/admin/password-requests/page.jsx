@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { api } from "@/services/api";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Loader2, KeyRound, MessageCircle } from "lucide-react";
+import { Loader2, KeyRound, MessageCircle, ShieldAlert } from "lucide-react";
 
 export default function AdminPasswordRequests() {
   const [requests, setRequests] = useState([]);
@@ -19,14 +19,25 @@ export default function AdminPasswordRequests() {
   useEffect(() => { fetchRequests(); }, []);
 
   const handleReset = async (requestId, phone) => {
-    const newPassword = prompt(`Enter a new temporary password for user +${phone}:`);
+    const newPassword = prompt(`Enter a new temporary LOGIN password for +${phone}:`);
     if (!newPassword) return;
-    
     if (newPassword.length < 6) return alert("Password must be at least 6 characters");
 
     try {
       await api.resetUserPassword(requestId, newPassword);
-      alert(`Password reset to: ${newPassword}\n\nNow go to WhatsApp and send it to +${phone}`);
+      alert(`Login Password reset to: ${newPassword}\n\nNow send it to +${phone} on WhatsApp.`);
+      fetchRequests();
+    } catch (e) {
+      alert(e.message);
+    }
+  };
+
+  const handleResetWithdraw = async (requestId, phone) => {
+    if (!window.confirm(`Clear Withdraw Password for +${phone}?\n\nThey will need to create a new one on their next withdrawal.`)) return;
+    
+    try {
+      await api.resetWithdrawPassword(requestId);
+      alert("Withdraw password cleared. User can now create a new one.");
       fetchRequests();
     } catch (e) {
       alert(e.message);
@@ -48,7 +59,7 @@ export default function AdminPasswordRequests() {
             <TableRow>
               <TableHead>Phone Number</TableHead>
               <TableHead>Requested At</TableHead>
-              <TableHead className="text-right">Action</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -67,31 +78,21 @@ export default function AdminPasswordRequests() {
                     {new Date(req.created_at).toLocaleString()}
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button 
-                      onClick={() => handleReset(req.id, req.phone)}
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white h-8 text-xs shadow-sm"
-                    >
-                      <KeyRound size={14} className="mr-2" /> Reset & Copy Password
-                    </Button>
+                    <div className="flex justify-end gap-2">
+                      <Button 
+                        onClick={() => handleReset(req.id, req.phone)}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white h-8 text-xs shadow-sm"
+                      >
+                        <KeyRound size={14} className="mr-1.5" /> Reset Login Pass
+                      </Button>
+                      <Button 
+                        onClick={() => handleResetWithdraw(req.id, req.phone)}
+                        className="bg-rose-100 hover:bg-rose-200 text-rose-700 h-8 text-xs shadow-sm border border-rose-200"
+                      >
+                        <ShieldAlert size={14} className="mr-1.5" /> Clear Withdraw Pass
+                      </Button>
+                    </div>
                   </TableCell>
-                  // Inside the map for requests:
-<Button 
-  onClick={() => handleResetWithdraw(req.id, req.phone)}
-  className="bg-rose-600 hover:bg-rose-700 text-white h-8 text-xs shadow-sm ml-2"
->
-  Reset Withdraw Pass
-</Button>
-
-const handleResetWithdraw = async (requestId, phone) => {
-  if (!window.confirm(`Reset Withdraw Password for +${phone}? They will need to create a new one on their next withdrawal.`)) return;
-  try {
-    await api.resetWithdrawPassword(requestId); // Add this to api.js
-    alert("Withdraw password cleared. User can now create a new one.");
-    fetchRequests();
-  } catch (e) {
-    alert(e.message);
-  }
-};
                 </TableRow>
               ))
             )}
