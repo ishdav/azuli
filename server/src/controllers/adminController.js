@@ -212,7 +212,8 @@ export const resetUserPassword = async (req, res) => {
     await connection.query('UPDATE users SET password = ? WHERE phone = ?', [hashedPassword, phone]);
 
     // 4. Mark request as resolved
-    await connection.query('UPDATE password_reset_requests SET status = "Resolved" WHERE id = ?', [requestId]);
+    // ✅ FIX: Use single quotes for 'Resolved'
+    await connection.query("UPDATE password_reset_requests SET status = 'Resolved' WHERE id = ?", [requestId]);
 
     await connection.commit();
     res.json({ message: 'Password reset successfully. Send it to the user on WhatsApp.' });
