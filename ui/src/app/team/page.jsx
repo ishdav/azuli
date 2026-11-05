@@ -50,7 +50,9 @@ export default function TeamPage() {
   return (
     <div className="animate-fade-in bg-slate-50 min-h-screen pb-24">
       
-      <Header title="My Team" />
+      <div className="hidden md:block">
+        <Header title="My Team" />
+      </div>
 
       <main className="p-5 space-y-6">
         

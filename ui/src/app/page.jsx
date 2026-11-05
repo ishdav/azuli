@@ -83,6 +83,14 @@ export default function LoginPage() {
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               className="w-full outline-none text-lg font-medium bg-transparent placeholder:text-slate-300"
             />
+<div className="flex justify-end mt-2">
+  <span 
+    onClick={() => router.push("/forgot-password")} 
+    className="text-xs font-bold text-indigo-600 cursor-pointer hover:underline"
+  >
+    Forgot Password?
+  </span>
+</div>
           </div>
         </div>
 

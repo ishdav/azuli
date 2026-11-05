@@ -16,11 +16,36 @@ const request = async (endpoint, data, method = 'POST', isAdmin = false) => {
   const config = { method, headers };
   if (data) config.body = JSON.stringify(data);
 
-  const response = await fetch(`${API_URL}${endpoint}`, config);
-  const result = await response.json();
+  try {
+    const response = await fetch(`${API_URL}${endpoint}`, config);
 
-  if (!response.ok) throw new Error(result.message || 'Something went wrong');
-  return result;
+    // Auto-logout on 401
+    if (response.status === 401) {
+      if (isClient) {
+        localStorage.removeItem('azuli_token');
+        localStorage.removeItem('app_session');
+        localStorage.removeItem('admin_token');
+        localStorage.removeItem('admin_session');
+        window.location.href = isAdmin ? '/admin/login' : '/';
+      }
+      throw new Error('Session expired. Please log in again.');
+    }
+
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      throw new Error("Network error: The backend is unreachable or returned an invalid response. Please try again in 30 seconds.");
+    }
+
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Something went wrong');
+    return result;
+    
+  } catch (error) {
+    if (error.message === "Failed to fetch") {
+      throw new Error("Cannot connect to server. Please wait a moment and try again.");
+    }
+    throw error;
+  }
 };
 
 export const PLANS_CATALOG = [
@@ -33,7 +58,9 @@ export const PLANS_CATALOG = [
 ];
 
 export const api = {
-  // Auth
+  // ==========================================
+  // USER AUTHENTICATION
+  // ==========================================
   register: async (phone, password, inviteCode) => {
     const data = await request('/auth/register', { phone, password, inviteCode });
     if (isClient) {
@@ -59,13 +86,19 @@ export const api = {
     }
   },
 
-  // User Actions
+  requestPasswordReset: async (phone) => {
+    return await request('/auth/forgot-password', { phone });
+  },
+
+  // ==========================================
+  // USER ACTIONS
+  // ==========================================
   getMe: async () => {
     const token = isClient ? localStorage.getItem('azuli_token') : null;
-    if (!token) return getSession(); // Fallback to session if no token
+    if (!token) return getSession();
     
     const data = await request('/users/me', null, 'GET');
-    saveSession(data); // Update local session with fresh data
+    saveSession(data);
     return data;
   },
 
@@ -73,20 +106,21 @@ export const api = {
     return await request('/users/deposit', { amount });
   },
 
-  withdraw: async (amount) => {
-    return await request('/users/withdraw', { amount });
+  withdraw: async (amount, phoneNumber, network) => {
+    return await request('/users/withdraw', { amount, phoneNumber, network });
   },
 
-    purchasePlan: async (planId) => {
+  purchasePlan: async (planId) => {
     return await request('/users/purchase', { planId });
   },
 
-  // ✅ ADDED: Get Downlines (Referrals) from real backend
-  getDownlines: async () => {
-    return await request('/users/downlines', null, 'GET');
+  checkIn: async () => {
+    return await request('/users/checkin', {});
   },
 
-  // Admin Actions
+  // ==========================================
+  // ADMIN AUTHENTICATION & DASHBOARD
+  // ==========================================
   adminLogin: async (username, password) => {
     const data = await request('/admin/login', { username, password }, 'POST', true);
     if (isClient) {
@@ -104,29 +138,65 @@ export const api = {
   },
 
   getAdminStats: async () => await request('/admin/stats', null, 'GET', true),
-  getAllUsers: async () => await request('/admin/users', null, 'GET', true),
-  updateUserBalance: async (userId, newBalance) => await request(`/admin/users/${userId}/balance`, { newBalance }, 'PUT', true),
-  getAllTransactions: async () => await request('/admin/transactions', null, 'GET', true),
-  killSystem: async () => {
-    const res = await request('/admin/kill-system', null, 'POST', true);
-    if (isClient) localStorage.clear();
-    return res;
-  },
-
-  // Mocks (To be implemented on backend later)
-  adjustUserBalance: async (userId, amount) => {
-    const users = await api.getAllUsers();
-    const user = users.find(u => u.id === userId);
-    if (!user) throw new Error("User not found");
-    return await api.updateUserBalance(userId, user.balance + Number(amount));
-  },
-  deleteUser: async () => true,
+  
   getAdminChartData: async () => {
+    // Mock data for now
     const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     return days.map((day) => ({
       name: day,
       users: Math.floor(Math.random() * 50) + 10,
       volume: Math.floor(Math.random() * 500000) + 100000,
     }));
+  },
+
+  // ==========================================
+  // ADMIN USER MANAGEMENT
+  // ==========================================
+  getAllUsers: async () => await request('/admin/users', null, 'GET', true),
+  
+  updateUserBalance: async (userId, newBalance) => {
+    return await request(`/admin/users/${userId}/balance`, { newBalance }, 'PUT', true);
+  },
+
+  adjustUserBalance: async (userId, amount) => {
+    const users = await api.getAllUsers();
+    const user = users.find(u => u.id === userId);
+    if (!user) throw new Error("User not found");
+    return await api.updateUserBalance(userId, user.balance + Number(amount));
+  },
+
+  deleteUser: async (userId) => {
+    // To be implemented in backend later
+    return true; 
+  },
+
+  // ==========================================
+  // ADMIN PAYMENT APPROVALS
+  // ==========================================
+  getPendingPayments: async () => {
+    return await request('/admin/payments/pending', null, 'GET', true);
+  },
+
+  processPayment: async (txId, action) => {
+    return await request(`/admin/payments/${txId}/process`, { action }, 'POST', true);
+  },
+
+  getAllTransactions: async () => await request('/admin/transactions', null, 'GET', true),
+
+  killSystem: async () => {
+    const res = await request('/admin/kill-system', null, 'POST', true);
+    if (isClient) localStorage.clear();
+    return res;
+  },
+
+  // ==========================================
+  // ADMIN PASSWORD RESETS
+  // ==========================================
+  getPasswordRequests: async () => {
+    return await request('/admin/password-requests', null, 'GET', true);
+  },
+
+  resetUserPassword: async (requestId, newPassword) => {
+    return await request(`/admin/password-requests/${requestId}/reset`, { newPassword }, 'POST', true);
   }
 };

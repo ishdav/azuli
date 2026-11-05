@@ -107,3 +107,118 @@ export const killSystem = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+// Get all Pending Transactions
+export const getPendingPayments = async (req, res) => {
+  try {
+    const [txs] = await pool.query(`
+      SELECT t.id, t.type, t.amount, t.status, t.created_at, t.phone_number, t.network, u.phone as userPhone, u.id as userId 
+      FROM transactions t 
+      JOIN users u ON t.user_id = u.id 
+      WHERE t.status = 'Pending'
+      ORDER BY t.created_at DESC
+    `);
+    res.json(txs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Approve or Reject a Transaction
+export const processPayment = async (req, res) => {
+  const { txId } = req.params;
+  const { action } = req.body; // 'approve' or 'reject'
+
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    // 1. Get the transaction
+    const [txs] = await connection.query('SELECT * FROM transactions WHERE id = ?', [txId]);
+    if (txs.length === 0) throw new Error('Transaction not found');
+    const tx = txs[0];
+
+    if (tx.status !== 'Pending') throw new Error('Transaction already processed');
+
+    if (action === 'approve') {
+      // If it's a Deposit, add balance. (Withdrawals were already deducted)
+      if (tx.type === 'Deposit') {
+        await connection.query('UPDATE users SET balance = balance + ? WHERE id = ?', [tx.amount, tx.user_id]);
+      }
+      // ✅ FIX: Use single quotes for 'Success'
+      await connection.query("UPDATE transactions SET status = 'Success' WHERE id = ?", [txId]);
+      await connection.commit();
+      res.json({ message: 'Transaction approved successfully' });
+      
+    } else if (action === 'reject') {
+      // If it's a Withdrawal, refund the balance. (Deposits were never added)
+      if (tx.type === 'Withdraw') {
+        await connection.query('UPDATE users SET balance = balance + ? WHERE id = ?', [Math.abs(tx.amount), tx.user_id]);
+      }
+      // ✅ FIX: Use single quotes for 'Rejected'
+      await connection.query("UPDATE transactions SET status = 'Rejected' WHERE id = ?", [txId]);
+      await connection.commit();
+      res.json({ message: 'Transaction rejected and refunded' });
+      
+    } else {
+      throw new Error('Invalid action');
+    }
+
+  } catch (error) {
+    await connection.rollback();
+    res.status(400).json({ message: error.message });
+  } finally {
+    connection.release();
+  }
+};
+
+import bcrypt from 'bcryptjs'; // Make sure this is imported at the top
+
+// @desc    Get all pending password reset requests
+export const getPasswordRequests = async (req, res) => {
+  try {
+    const [requests] = await pool.query(
+      'SELECT id, phone, status, created_at FROM password_reset_requests WHERE status = "Pending" ORDER BY created_at DESC'
+    );
+    res.json(requests);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Reset a user's password manually
+export const resetUserPassword = async (req, res) => {
+  const { requestId } = req.params;
+  const { newPassword } = req.body;
+
+  if (!newPassword || newPassword.length < 6) {
+    return res.status(400).json({ message: 'Password must be at least 6 characters' });
+  }
+
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    // 1. Get the request
+    const [requests] = await connection.query('SELECT phone FROM password_reset_requests WHERE id = ?', [requestId]);
+    if (requests.length === 0) throw new Error('Request not found');
+    const phone = requests[0].phone;
+
+    // 2. Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // 3. Update user's password
+    await connection.query('UPDATE users SET password = ? WHERE phone = ?', [hashedPassword, phone]);
+
+    // 4. Mark request as resolved
+    await connection.query('UPDATE password_reset_requests SET status = "Resolved" WHERE id = ?', [requestId]);
+
+    await connection.commit();
+    res.json({ message: 'Password reset successfully. Send it to the user on WhatsApp.' });
+  } catch (error) {
+    await connection.rollback();
+    res.status(400).json({ message: error.message });
+  } finally {
+    connection.release();
+  }
+};

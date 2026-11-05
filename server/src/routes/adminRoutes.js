@@ -5,7 +5,11 @@ import {
   getAllUsers, 
   updateUserBalance, 
   getAllTransactions, 
-  killSystem 
+  killSystem,
+  getPendingPayments, 
+  processPayment,
+  getPasswordRequests, 
+  resetUserPassword 
 } from '../controllers/adminController.js';
 import { protectAdmin } from '../middleware/adminMiddleware.js';
 
@@ -22,5 +26,9 @@ router.get('/users', getAllUsers);
 router.put('/users/:userId/balance', updateUserBalance);
 router.get('/transactions', getAllTransactions);
 router.post('/kill-system', killSystem);
+router.get('/payments/pending', getPendingPayments);
+router.post('/payments/:txId/process', processPayment);
+router.get('/password-requests', getPasswordRequests);
+router.post('/password-requests/:requestId/reset', resetUserPassword);
 
 export default router;

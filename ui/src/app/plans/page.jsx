@@ -25,7 +25,9 @@ export default function PlansPage() {
 
   return (
     <div className="animate-fade-in bg-slate-50 min-h-screen pb-12">
-      <Header title="Yield Nodes" />
+      <div className="hidden md:block">
+        <Header title="Yield Nodes" />
+      </div>
       
       <main className="p-5 space-y-6">
         {/* Page Header */}

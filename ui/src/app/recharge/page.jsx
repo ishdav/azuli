@@ -21,7 +21,7 @@ export default function RechargePage() {
   const confirmPayment = () => {
     try {
       recharge(amount);
-      alert("Deposit successful!");
+      alert("Deposit requeted successfully. Your account will be credited shortly.");
       router.push("/");
     } catch (e) {
       alert(e.message);

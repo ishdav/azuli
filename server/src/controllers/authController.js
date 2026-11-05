@@ -135,3 +135,40 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+// @desc    Request password reset
+// @route   POST /api/auth/forgot-password
+export const requestPasswordReset = async (req, res) => {
+  const { phone } = req.body;
+  const connection = await pool.getConnection();
+
+  try {
+    // Check if user exists
+    const [users] = await connection.query('SELECT id FROM users WHERE phone = ?', [phone]);
+    if (users.length === 0) {
+      return res.status(404).json({ message: 'No account found with this phone number.' });
+    }
+
+    // Check if a pending request already exists to avoid spam
+    const [existing] = await connection.query(
+      'SELECT id FROM password_reset_requests WHERE phone = ? AND status = "Pending"', 
+      [phone]
+    );
+    
+    if (existing.length > 0) {
+      return res.json({ message: 'You already have a pending request. Please contact Admin on WhatsApp.' });
+    }
+
+    // Create new request
+    await connection.query(
+      'INSERT INTO password_reset_requests (id, phone) VALUES (?, ?)',
+      [crypto.randomUUID(), phone]
+    );
+
+    res.json({ message: 'Request submitted. Admin will contact you on WhatsApp shortly.' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  } finally {
+    connection.release();
+  }
+};

@@ -64,6 +64,12 @@ export function AppProvider({ children }) {
     await refreshUser(); // Auto-update nodes and balance
     return res;
   };
+  const checkIn = async () => {
+    const res = await api.checkIn();
+    await refreshUser(); // Auto-update balance
+    return res;
+  };
+  // Remember to add `checkIn` to the `value={{ ... }}` object passed to the provider!
 
   // ✅ ADDED: The missing getDownlines function
   const getDownlines = async () => {
@@ -86,6 +92,7 @@ export function AppProvider({ children }) {
       withdraw, 
       purchasePlan, 
       refreshUser, 
+      checkIn, // ✅ ADDED to the provider value
       getDownlines, // ✅ ADDED to the provider value
       PLANS_CATALOG 
     }}>

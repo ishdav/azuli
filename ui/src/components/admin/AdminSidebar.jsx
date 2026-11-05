@@ -1,8 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Users, Receipt, LogOut, ArrowLeft, ShieldCheck, Zap } from "lucide-react";
-import { api } from "@/services/api";
+import { LayoutDashboard, Users, Receipt, LogOut, ArrowLeft, ShieldCheck, CreditCard, KeyRound } from "lucide-react";import { api } from "@/services/api";
 
 export default function AdminSidebar({ onNavigate }) {
   const pathname = usePathname();
@@ -14,9 +13,12 @@ export default function AdminSidebar({ onNavigate }) {
   };
 
   const navItems = [
+    { name: "Password Resets", icon: KeyRound, path: "/admin/password-requests" },
     { name: "Overview", icon: LayoutDashboard, path: "/admin" },
     { name: "User Management", icon: Users, path: "/admin/users" },
     { name: "All Transactions", icon: Receipt, path: "/admin/transactions" },
+      { name: "Transactions", icon: Receipt, path: "/admin/transactions" },
+  { name: "Payment Requests", icon: CreditCard, path: "/admin/payments" }, // ✅ Add this
   ];
 
   return (

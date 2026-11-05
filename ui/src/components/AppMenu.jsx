@@ -65,10 +65,10 @@ export default function AppMenu() {
         FIX: Removed asChild and the inner <button>. 
         Applied the styling directly to the Trigger component.
       */}
-      <DropdownMenuTrigger className="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors relative outline-none">
-        <Menu size={22} />
-        <span className="absolute top-2 right-2 w-2 h-2 bg-indigo-500 rounded-full border-2 border-white"></span>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger className="hidden md:flex p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors relative outline-none">
+  <Menu size={22} />
+  <span className="absolute top-2 right-2 w-2 h-2 bg-indigo-500 rounded-full border-2 border-white"></span>
+</DropdownMenuTrigger>
 
       <DropdownMenuContent 
         align="end" 

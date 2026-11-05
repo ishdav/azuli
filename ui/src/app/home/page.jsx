@@ -9,12 +9,11 @@ import AppMenu from "@/components/AppMenu";
 import Loader from "@/components/Loader";
 import { 
   ArrowUpRight, ArrowDownLeft, Activity, 
-  ChevronRight, Gift, TrendingUp, RefreshCw // <-- Added RefreshCw
+  ChevronRight, Gift, TrendingUp, RefreshCw
 } from "lucide-react";
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer, YAxis } from "recharts";
 
 export default function HomePage() {
-  // <-- Added refreshUser from context
   const { user, isLoaded, refreshUser } = useApp(); 
   const router = useRouter();
 
@@ -39,28 +38,30 @@ export default function HomePage() {
   if (!isLoaded) return <Loader message="Syncing portfolio..." />;
   if (!user) return null;
 
-  const recentTransactions = user.transactions?.slice(-3).reverse() || [];
+  const recentTransactions = user.transactions?.slice(0, 3) || [];
   const activeNodes = user.nodes?.slice(0, 3) || [];
 
   return (
     <div className="animate-fade-in bg-slate-50 min-h-screen">
       
-      <Header 
-        title="Dashboard" 
-        rightAction={
-          <div className="flex items-center gap-1">
-            {/* SYNC BUTTON */}
-            <button 
-              onClick={refreshUser} 
-              className="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors"
-              title="Sync Balance"
-            >
-              <RefreshCw size={18} />
-            </button>
-            <AppMenu />
-          </div>
-        } 
-      />
+      {/* ✅ Header is HIDDEN on phones, visible on md (tablets/desktop) */}
+      <div className="hidden md:block">
+        <Header 
+          title="Dashboard" 
+          rightAction={
+            <div className="flex items-center gap-1">
+              <button 
+                onClick={refreshUser} 
+                className="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors"
+                title="Sync Balance"
+              >
+                <RefreshCw size={18} />
+              </button>
+              <AppMenu />
+            </div>
+          } 
+        />
+      </div>
 
       <main className="p-5 space-y-8 pb-12">
         
@@ -221,22 +222,37 @@ export default function HomePage() {
           
           <div className="space-y-3">
             {activeNodes.length > 0 ? (
-              activeNodes.map((node) => (
-                <Card key={node.id} className="p-4 border-none shadow-sm bg-white rounded-2xl flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0 text-indigo-600">
-                    <Activity size={24} />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-center mb-1">
-                      <h4 className="font-bold text-sm text-slate-900">{node.name}</h4>
-                      <span className="text-xs font-bold text-emerald-600">+{node.dailyYield.toLocaleString()}/d</span>
+              activeNodes.map((node) => {
+                const daysPassed = Math.max(
+                  1,
+                  Math.floor((Date.now() - new Date(node.purchaseDate).getTime()) / (1000 * 60 * 60 * 24))
+                );
+                const progress = Math.min((daysPassed / 150) * 100, 100);
+                const isCompleted = progress >= 100;
+
+                return (
+                  <Card key={node.id} className="p-4 border-none shadow-sm bg-white rounded-2xl flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0 text-indigo-600">
+                      <Activity size={24} />
                     </div>
-                    <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-indigo-500 rounded-full" style={{ width: '45%' }}></div>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-center mb-1">
+                        <h4 className="font-bold text-sm text-slate-900">{node.name}</h4>
+                        <span className="text-xs font-bold text-emerald-600">+{node.dailyYield.toLocaleString()}/d</span>
+                      </div>
+                      <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full rounded-full ${isCompleted ? 'bg-slate-400' : 'bg-indigo-500'}`} 
+                          style={{ width: `${progress}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-[9px] text-slate-400 mt-1 font-medium text-right">
+                        {isCompleted ? 'Completed' : `${daysPassed} / 150 Days`}
+                      </p>
                     </div>
-                  </div>
-                </Card>
-              ))
+                  </Card>
+                );
+              })
             ) : (
               <Card className="p-6 text-center border-none shadow-sm bg-white rounded-2xl">
                 <p className="text-sm text-slate-500 mb-3">You don't have any active nodes.</p>

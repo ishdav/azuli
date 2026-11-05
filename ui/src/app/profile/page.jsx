@@ -26,14 +26,16 @@ export default function ProfilePage() {
 
   return (
     <div className="animate-fade-in bg-slate-50 min-h-screen pb-32">
-      <Header 
-        title="Portfolio" 
-        rightAction={
-          <button onClick={() => { logout(); router.push("/"); }} className="p-2 text-slate-400 hover:text-rose-500 transition-colors">
-            <LogOut size={20} />
-          </button>
-        }
-      />
+        <div className="hidden md:block">
+        <Header 
+          title="Portfolio" 
+          rightAction={
+            <button onClick={() => { logout(); router.push("/"); }} className="p-2 text-slate-400 hover:text-rose-500 transition-colors">
+              <LogOut size={20} />
+            </button>
+          }
+        />
+      </div>
       
       <main className="p-4 space-y-6">
         {/* User Card */}

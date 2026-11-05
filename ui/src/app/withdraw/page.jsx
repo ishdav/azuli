@@ -40,7 +40,9 @@ export default function WithdrawPage() {
 
   return (
     <div className="animate-fade-in bg-slate-50 min-h-screen pb-32">
-      <Header title="Withdraw Funds" showBack />
+      <div className="hidden md:block">
+        <Header title="Withdraw Funds" showBack />
+      </div>
       <main className="p-4 space-y-4">
         
         <Card className="p-6 border-none shadow-sm bg-slate-900 text-white rounded-3xl relative overflow-hidden">

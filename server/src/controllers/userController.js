@@ -13,9 +13,15 @@ const PLANS_CATALOG = [
 
 // @desc    Get current user profile (Used for Syncing)
 // @route   GET /api/users/me
+// @desc    Get current user profile (Used for Syncing)
+// @route   GET /api/users/me
 export const getMe = async (req, res) => {
   try {
-    const [users] = await pool.query('SELECT id, phone, invite_code, balance, total_yield FROM users WHERE id = ?', [req.user.id]);
+    // ✅ ADDED last_check_in to the query
+    const [users] = await pool.query(
+      'SELECT id, phone, invite_code, balance, total_yield, last_check_in FROM users WHERE id = ?', 
+      [req.user.id]
+    );
     if (users.length === 0) return res.status(404).json({ message: 'User not found' });
     
     const u = users[0];
@@ -32,7 +38,7 @@ export const getMe = async (req, res) => {
       status: n.status
     }));
 
-    // ✅ FIX: Fetch Transactions and map them to frontend schema
+    // Fetch Transactions
     const [transactions] = await pool.query(
       'SELECT id, type, amount, status, created_at FROM transactions WHERE user_id = ? ORDER BY created_at DESC', 
       [req.user.id]
@@ -42,7 +48,7 @@ export const getMe = async (req, res) => {
       type: t.type,
       amount: parseFloat(t.amount),
       status: t.status,
-      date: t.created_at // Frontend expects "date", DB has "created_at"
+      date: t.created_at 
     }));
 
     res.json({
@@ -51,15 +57,15 @@ export const getMe = async (req, res) => {
       inviteCode: u.invite_code,
       balance: parseFloat(u.balance),
       totalYield: parseFloat(u.total_yield),
+      lastCheckIn: u.last_check_in, // ✅ ADDED to response
       nodes: formattedNodes,
-      transactions: formattedTransactions // ✅ Send them to the frontend
+      transactions: formattedTransactions 
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
-// @desc    Deposit funds
+// @desc    Request a deposit
 // @route   POST /api/users/deposit
 export const deposit = async (req, res) => {
   const { amount } = req.body;
@@ -69,14 +75,14 @@ export const deposit = async (req, res) => {
   try {
     await connection.beginTransaction();
     
-    await connection.query('UPDATE users SET balance = balance + ? WHERE id = ?', [amount, req.user.id]);
+    // ✅ CHANGED: Do not update balance. Just log as Pending.
     await connection.query(
       'INSERT INTO transactions (id, user_id, type, amount, status) VALUES (?, ?, ?, ?, ?)',
-      [crypto.randomUUID(), req.user.id, 'Deposit', amount, 'Success']
+      [crypto.randomUUID(), req.user.id, 'Deposit', amount, 'Pending']
     );
 
     await connection.commit();
-    res.json({ message: 'Deposit successful', amount });
+    res.json({ message: 'Deposit request submitted. Awaiting admin approval.', amount });
   } catch (error) {
     await connection.rollback();
     res.status(500).json({ message: error.message });
@@ -85,13 +91,10 @@ export const deposit = async (req, res) => {
   }
 };
 
-// @desc    Withdraw funds
-// @route   POST /api/users/withdraw
-// @desc    Withdraw funds
+// @desc    Request a withdrawal
 // @route   POST /api/users/withdraw
 export const withdraw = async (req, res) => {
-  const { amount, phoneNumber, network } = req.body; // We will use phone/network for Flutterwave later
-  
+  const { amount, phoneNumber, network } = req.body;
   if (amount < 3000) return res.status(400).json({ message: 'Minimum withdrawal is 3,000 RWF' });
 
   const connection = await pool.getConnection();
@@ -101,21 +104,16 @@ export const withdraw = async (req, res) => {
     const [users] = await connection.query('SELECT balance FROM users WHERE id = ?', [req.user.id]);
     if (users[0].balance < amount) throw new Error('Insufficient balance');
 
-    // ✅ CHANGED TO 20%
-    const tax = amount * 0.20; 
-    const finalAmount = amount - tax;
-
-    // Deduct the FULL amount from balance
+    // ✅ CHANGED: Deduct balance immediately to freeze funds, but mark transaction as Pending
     await connection.query('UPDATE users SET balance = balance - ? WHERE id = ?', [amount, req.user.id]);
     
-    // Log the transaction
     await connection.query(
-      'INSERT INTO transactions (id, user_id, type, amount, status) VALUES (?, ?, ?, ?, ?)',
-      [crypto.randomUUID(), req.user.id, 'Withdraw', -amount, 'Success']
+      'INSERT INTO transactions (id, user_id, type, amount, status, phone_number, network) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [crypto.randomUUID(), req.user.id, 'Withdraw', -amount, 'Pending', phoneNumber, network]
     );
 
     await connection.commit();
-    res.json({ message: 'Withdrawal successful', finalAmount });
+    res.json({ message: 'Withdrawal request submitted. Awaiting admin approval.' });
   } catch (error) {
     await connection.rollback();
     res.status(400).json({ message: error.message });
@@ -157,6 +155,38 @@ export const purchasePlan = async (req, res) => {
 
     await connection.commit();
     res.json({ message: 'Node purchased successfully' });
+  } catch (error) {
+    await connection.rollback();
+    res.status(400).json({ message: error.message });
+  } finally {
+    connection.release();
+  }
+};
+
+// @desc    Daily Check-in
+// @route   POST /api/users/checkin
+export const checkIn = async (req, res) => {
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    const [users] = await connection.query('SELECT last_check_in FROM users WHERE id = ?', [req.user.id]);
+    const lastCheckIn = users[0].last_check_in;
+    const today = new Date().toDateString();
+
+    if (lastCheckIn && new Date(lastCheckIn).toDateString() === today) {
+      throw new Error('Already checked in today');
+    }
+
+    // Add 200 RWF bonus
+    await connection.query('UPDATE users SET balance = balance + 200, last_check_in = NOW() WHERE id = ?', [req.user.id]);
+    await connection.query(
+      'INSERT INTO transactions (id, user_id, type, amount, status) VALUES (?, ?, ?, ?, ?)',
+      [crypto.randomUUID(), req.user.id, 'Check-in', 200, 'Success']
+    );
+
+    await connection.commit();
+    res.json({ message: 'Check-in successful', reward: 200 });
   } catch (error) {
     await connection.rollback();
     res.status(400).json({ message: error.message });

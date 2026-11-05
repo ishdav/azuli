@@ -59,7 +59,7 @@ export default function Register() {
             JOIN NETWORK
           </Button>
           <p className="text-center text-sm text-gray-500 mt-4">
-            Already have an account? <span className="text-purple-600 font-bold cursor-pointer" onClick={() => router.push("/login")}>Log in now</span>
+            Already have an account? <span className="text-purple-600 font-bold cursor-pointer" onClick={() => router.push("/")}>Log in now</span>
           </p>
         </div>
       </Card>
