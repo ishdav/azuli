@@ -6,10 +6,10 @@ import { PLANS_CATALOG } from "@/services/api";
 import Header from "@/components/Header";
 import NodeCard from "@/components/NodeCard";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { 
   Activity, ShieldCheck, LogOut, ChevronRight, 
-  Settings, FileText, Zap, Users, CalendarCheck,
-  User
+  Settings, FileText, Zap, Users, CalendarCheck
 } from "lucide-react";
 
 export default function ProfilePage() {
@@ -22,34 +22,53 @@ export default function ProfilePage() {
 
   if (!isLoaded || !user) return null;
 
+  const handleLogout = () => {
+    logout();
+    router.push("/");
+  };
+
   const totalStaked = user.nodes?.reduce((sum, n) => sum + n.buyPrice, 0) || 0;
 
   return (
     <div className="animate-fade-in bg-slate-50 min-h-screen pb-32">
-        <div className="hidden md:block">
+      
+      {/* Header (Hidden on mobile) */}
+      <div className="hidden md:block">
         <Header 
           title="Portfolio" 
           rightAction={
-            <button onClick={() => { logout(); router.push("/"); }} className="p-2 text-slate-400 hover:text-rose-500 transition-colors">
+            <button onClick={handleLogout} className="p-2 text-slate-400 hover:text-rose-500 transition-colors">
               <LogOut size={20} />
             </button>
           }
         />
       </div>
-      
+
       <main className="p-4 space-y-6">
+        
         {/* User Card */}
-        <Card className="p-6 border-none shadow-sm bg-white rounded-3xl flex items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-indigo-500/30">
-            <User />
+        <Card className="p-6 border-none shadow-sm bg-white rounded-3xl flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-indigo-500/30">
+              {user.phone.slice(-2)}
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-slate-900">+{user.phone}</h2>
+              <p className="text-xs text-slate-500 mt-1">Invite Code: <span className="font-bold text-indigo-600">{user.inviteCode}</span></p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-lg font-bold text-slate-900">+{user.phone}</h2>
-            <p className="text-xs text-slate-500 mt-1">Invite Code: <span className="font-bold text-indigo-600">{user.inviteCode}</span></p>
-          </div>
+
+          {/* ✅ Mobile-only Logout Button */}
+          <button 
+            onClick={handleLogout}
+            className="md:hidden p-3 bg-rose-50 text-rose-600 rounded-2xl hover:bg-rose-100 transition-colors flex-shrink-0"
+            title="Log Out"
+          >
+            <LogOut size={20} />
+          </button>
         </Card>
 
-        {/* NEW: Quick Actions Grid Moved from Home */}
+        {/* Quick Actions Grid */}
         <div>
           <h3 className="font-bold text-slate-900 mb-3">Quick Actions</h3>
           <div className="grid grid-cols-4 gap-3">
@@ -73,7 +92,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Stats */}
+        {/* Stats Grid */}
         <div className="grid grid-cols-3 gap-3">
           <Card className="p-3 text-center border-none shadow-sm bg-white rounded-2xl">
             <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">Staked</p>
@@ -132,6 +151,18 @@ export default function ProfilePage() {
             </div>
           </Card>
         </div>
+
+        {/* ✅ Mobile-Only Logout Button (Alternative placement at bottom) */}
+        <div className="md:hidden pt-4">
+          <Button 
+            onClick={handleLogout}
+            variant="outline"
+            className="w-full h-12 rounded-2xl border-rose-200 text-rose-600 hover:bg-rose-50 font-bold flex items-center justify-center"
+          >
+            <LogOut size={18} className="mr-2" /> Log Out
+          </Button>
+        </div>
+
       </main>
     </div>
   );
