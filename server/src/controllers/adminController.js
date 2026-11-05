@@ -176,8 +176,9 @@ import bcrypt from 'bcryptjs'; // Make sure this is imported at the top
 // @desc    Get all pending password reset requests
 export const getPasswordRequests = async (req, res) => {
   try {
+    // ✅ FIX: Use single quotes for 'Pending'
     const [requests] = await pool.query(
-      'SELECT id, phone, status, created_at FROM password_reset_requests WHERE status = "Pending" ORDER BY created_at DESC'
+      "SELECT id, phone, status, created_at FROM password_reset_requests WHERE status = 'Pending' ORDER BY created_at DESC"
     );
     res.json(requests);
   } catch (error) {

@@ -150,8 +150,9 @@ export const requestPasswordReset = async (req, res) => {
     }
 
     // Check if a pending request already exists to avoid spam
+    // ✅ FIX: Use single quotes for 'Pending'
     const [existing] = await connection.query(
-      'SELECT id FROM password_reset_requests WHERE phone = ? AND status = "Pending"', 
+      "SELECT id FROM password_reset_requests WHERE phone = ? AND status = 'Pending'", 
       [phone]
     );
     
