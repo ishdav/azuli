@@ -1,7 +1,17 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Users, Receipt, LogOut, ArrowLeft, ShieldCheck, CreditCard, KeyRound } from "lucide-react";import { api } from "@/services/api";
+import { 
+  LayoutDashboard, 
+  Users, 
+  Receipt, 
+  LogOut, 
+  ArrowLeft, 
+  ShieldCheck, 
+  CreditCard,
+  KeyRound
+} from "lucide-react";
+import { api } from "@/services/api";
 
 export default function AdminSidebar({ onNavigate }) {
   const pathname = usePathname();
@@ -13,12 +23,11 @@ export default function AdminSidebar({ onNavigate }) {
   };
 
   const navItems = [
-    { name: "Password Resets", icon: KeyRound, path: "/admin/password-requests" },
     { name: "Overview", icon: LayoutDashboard, path: "/admin" },
     { name: "User Management", icon: Users, path: "/admin/users" },
+    { name: "Payment Requests", icon: CreditCard, path: "/admin/payments" },
     { name: "All Transactions", icon: Receipt, path: "/admin/transactions" },
-      { name: "Transactions", icon: Receipt, path: "/admin/transactions" },
-  { name: "Payment Requests", icon: CreditCard, path: "/admin/payments" }, // ✅ Add this
+    { name: "Password Resets", icon: KeyRound, path: "/admin/password-requests" },
   ];
 
   return (
@@ -38,21 +47,25 @@ export default function AdminSidebar({ onNavigate }) {
       </div>
 
       {/* Nav Links */}
-      <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+      <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
         {navItems.map((item) => {
-          const isActive = pathname === item.path;
+          // Exact match for overview, startsWith for nested routes
+          const isActive = item.path === "/admin" 
+            ? pathname === "/admin" 
+            : pathname.startsWith(item.path);
+
           return (
             <Link
               key={item.name}
               href={item.path}
               onClick={onNavigate}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${
+              className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group ${
                 isActive 
-                  ? "bg-slate-800 text-white font-semibold shadow-sm" 
+                  ? "bg-indigo-600 text-white font-semibold shadow-lg shadow-indigo-600/20" 
                   : "text-slate-400 hover:text-white hover:bg-slate-800/50 font-medium"
               }`}
             >
-              <item.icon size={18} className={isActive ? "text-indigo-400" : "text-slate-500 group-hover:text-slate-300"} />
+              <item.icon size={18} className={isActive ? "text-white" : "text-slate-500 group-hover:text-slate-300"} />
               <span className="text-sm">{item.name}</span>
             </Link>
           );

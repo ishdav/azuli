@@ -39,7 +39,12 @@ export default function AdminTransactionsPage() {
           <TableBody>
             {txs.map((tx) => (
               <TableRow key={tx.id}>
-                <TableCell className="text-slate-500">{new Date(tx.date).toLocaleString()}</TableCell>
+                <TableCell className="text-slate-500">
+  {/* ✅ Fallback to created_at, and check if it's valid before rendering */}
+  {tx.created_at || tx.date 
+    ? new Date(tx.created_at || tx.date).toLocaleString() 
+    : "N/A"}
+</TableCell>
                 <TableCell className="font-medium text-slate-900">+{tx.userPhone}</TableCell>
                 <TableCell>
                   <span className="font-semibold text-slate-700">{tx.type}</span>
