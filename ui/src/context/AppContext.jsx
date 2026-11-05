@@ -53,8 +53,8 @@ export function AppProvider({ children }) {
     await refreshUser(); 
   };
 
-  const withdraw = async (amount) => {
-    const res = await api.withdraw(amount);
+  const withdraw = async (amount, phoneNumber, network, withdrawPassword) => {
+    const res = await api.withdraw(amount, phoneNumber, network, withdrawPassword);
     await refreshUser(); 
     return res;
   };

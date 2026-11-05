@@ -121,7 +121,7 @@ export default function RechargePage() {
             <div>
               <p className="font-bold text-gray-800">Step 3</p>
               <p className="text-gray-600">Please enter your entire payment SMS</p>
-              <textarea className="w-full border rounded p-2 mt-1 text-xs" rows={3} placeholder="Paste SMS here..."></textarea>
+              <textarea className="w-full border rounded p-2 mt-1 text-xs" rows={3} placeholder="Paste SMS here..." required></textarea>
             </div>
           </div>
 

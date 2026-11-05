@@ -74,6 +74,24 @@ export default function AdminPasswordRequests() {
                       <KeyRound size={14} className="mr-2" /> Reset & Copy Password
                     </Button>
                   </TableCell>
+                  // Inside the map for requests:
+<Button 
+  onClick={() => handleResetWithdraw(req.id, req.phone)}
+  className="bg-rose-600 hover:bg-rose-700 text-white h-8 text-xs shadow-sm ml-2"
+>
+  Reset Withdraw Pass
+</Button>
+
+const handleResetWithdraw = async (requestId, phone) => {
+  if (!window.confirm(`Reset Withdraw Password for +${phone}? They will need to create a new one on their next withdrawal.`)) return;
+  try {
+    await api.resetWithdrawPassword(requestId); // Add this to api.js
+    alert("Withdraw password cleared. User can now create a new one.");
+    fetchRequests();
+  } catch (e) {
+    alert(e.message);
+  }
+};
                 </TableRow>
               ))
             )}

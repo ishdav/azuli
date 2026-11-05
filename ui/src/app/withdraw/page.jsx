@@ -10,6 +10,7 @@ import Loader from "@/components/Loader";
 
 export default function WithdrawPage() {
   const { user, isLoaded, withdraw } = useApp();
+  const [withdrawPassword, setWithdrawPassword] = useState("");
   const router = useRouter();
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
@@ -26,17 +27,16 @@ export default function WithdrawPage() {
   const canWithdraw = numericAmount >= 3000 && numericAmount <= user.balance;
 
   const handleWithdraw = async () => {
-    setLoading(true);
-    try {
-      await withdraw(numericAmount); // Assume withdraw is defined in context
-      alert(`Withdrawal requested for ${finalAmount.toLocaleString()} RWF`);
-      router.push("/profile");
-    } catch (e) {
-      alert(e.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (!withdrawPassword) return alert("Please enter your withdraw password");
+  // ... existing validation ...
+  try {
+    await withdraw(numericAmount, withdrawPhone, network, withdrawPassword);
+    alert("Withdrawal requested successfully!");
+    router.push("/history");
+  } catch (e) {
+    alert(e.message);
+  }
+};
 
   return (
     <div className="animate-fade-in bg-slate-50 min-h-screen pb-32">
@@ -64,6 +64,31 @@ export default function WithdrawPage() {
                 className="w-full bg-transparent outline-none text-3xl font-bold text-slate-900 placeholder:text-slate-300"
               />
             </div>
+            <div className="mt-4">
+  <label className="text-xs font-bold text-slate-500 uppercase">
+    {user.hasWithdrawPassword ? "Enter Withdraw Password" : "Create Withdraw Password"}
+  </label>
+  <input
+    type="password"
+    value={withdrawPassword}
+    onChange={(e) => setWithdrawPassword(e.target.value)}
+    placeholder={user.hasWithdrawPassword ? "••••••••" : "Set a new password (NOT your login password)"}
+    className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 outline-none"
+  />
+  {!user.hasWithdrawPassword && (
+    <p className="text-[10px] text-amber-600 mt-1">
+      ⚠️ Important: This password is different from your login password. Keep it safe.
+    </p>
+  )}
+  {user.hasWithdrawPassword && (
+    <p 
+      className="text-[10px] text-indigo-600 mt-1 font-bold cursor-pointer hover:underline"
+      onClick={() => router.push("/forgot-withdraw-password")}
+    >
+      Forgot Withdraw Password?
+    </p>
+  )}
+</div>
             <p className="text-xs text-slate-500 mt-2">Min withdrawal: 3,000 RWF</p>
           </div>
 

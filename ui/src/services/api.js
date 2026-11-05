@@ -106,8 +106,8 @@ export const api = {
     return await request('/users/deposit', { amount });
   },
 
-  withdraw: async (amount, phoneNumber, network) => {
-    return await request('/users/withdraw', { amount, phoneNumber, network });
+  withdraw: async (amount, phoneNumber, network, withdrawPassword) => {
+    return await request('/users/withdraw', { amount, phoneNumber, network, withdrawPassword });
   },
 
   purchasePlan: async (planId) => {

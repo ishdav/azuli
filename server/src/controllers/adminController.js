@@ -224,3 +224,27 @@ export const resetUserPassword = async (req, res) => {
     connection.release();
   }
 };
+// @desc    Reset a user's withdraw password (set to NULL)
+export const resetWithdrawPassword = async (req, res) => {
+  const { requestId } = req.params;
+  const connection = await pool.getConnection();
+
+  try {
+    // 1. Get the request
+    const [requests] = await connection.query('SELECT phone FROM password_reset_requests WHERE id = ?', [requestId]);
+    if (requests.length === 0) throw new Error('Request not found');
+    const phone = requests[0].phone;
+
+    // 2. Clear the withdraw password (so they can create a new one next time)
+    await connection.query('UPDATE users SET withdraw_password = NULL WHERE phone = ?', [phone]);
+
+    // 3. Mark request as resolved
+    await connection.query("UPDATE password_reset_requests SET status = 'Resolved' WHERE id = ?", [requestId]);
+
+    res.json({ message: 'Withdraw password cleared. User can now create a new one.' });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  } finally {
+    connection.release();
+  }
+};

@@ -30,5 +30,6 @@ router.get('/payments/pending', getPendingPayments);
 router.post('/payments/:txId/process', processPayment);
 router.get('/password-requests', getPasswordRequests);
 router.post('/password-requests/:requestId/reset', resetUserPassword);
+router.post('/password-requests/:requestId/reset-withdraw', resetWithdrawPassword);
 
 export default router;
