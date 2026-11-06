@@ -35,5 +35,8 @@
   },
   "dependencies": {
     "@vercel/speed-insights": "^2.0.0"
+  },
+  "devDependencies": {
+    "prettier": "3.9.10"
   }
 }
