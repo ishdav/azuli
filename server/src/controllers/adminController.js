@@ -107,11 +107,10 @@ export const killSystem = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-// Get all Pending Transactions
 export const getPendingPayments = async (req, res) => {
   try {
     const [txs] = await pool.query(`
-      SELECT t.id, t.type, t.amount, t.status, t.created_at, t.phone_number, t.network, u.phone as userPhone, u.id as userId 
+      SELECT t.id, t.type, t.amount, t.status, t.created_at, t.phone_number, t.network, t.payment_proof, u.phone as userPhone, u.id as userId 
       FROM transactions t 
       JOIN users u ON t.user_id = u.id 
       WHERE t.status = 'Pending'

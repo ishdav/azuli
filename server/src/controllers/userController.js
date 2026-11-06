@@ -45,20 +45,25 @@ export const getMe = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 // @desc    Request a deposit
 // @route   POST /api/users/deposit
 export const deposit = async (req, res) => {
-  const { amount } = req.body;
+  const { amount, paymentProof } = req.body; // ✅ Accept paymentProof
+  
   if (amount < 10000) return res.status(400).json({ message: 'Minimum deposit is 10,000 RWF' });
+  if (!paymentProof || paymentProof.trim() === '') {
+    return res.status(400).json({ message: 'Payment SMS or Transaction ID is required' });
+  }
 
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
     
-    // ✅ CHANGED: Do not update balance. Just log as Pending.
+    // ✅ Save paymentProof to the transaction
     await connection.query(
-      'INSERT INTO transactions (id, user_id, type, amount, status) VALUES (?, ?, ?, ?, ?)',
-      [crypto.randomUUID(), req.user.id, 'Deposit', amount, 'Pending']
+      'INSERT INTO transactions (id, user_id, type, amount, status, payment_proof) VALUES (?, ?, ?, ?, ?, ?)',
+      [crypto.randomUUID(), req.user.id, 'Deposit', amount, 'Pending', paymentProof]
     );
 
     await connection.commit();

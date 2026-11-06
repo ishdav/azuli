@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 import { api } from "@/services/api";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2, CheckCircle2, XCircle, ArrowDownLeft, ArrowUpRight } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, ArrowDownLeft, ArrowUpRight, FileText } from "lucide-react";
 
 export default function AdminPaymentsPage() {
   const [payments, setPayments] = useState([]);
@@ -51,7 +50,8 @@ export default function AdminPaymentsPage() {
                 <TableHead>Type</TableHead>
                 <TableHead>User Phone</TableHead>
                 <TableHead>Amount</TableHead>
-                <TableHead>Destination (For Withdraw)</TableHead>
+                {/* ✅ Updated Header */}
+                <TableHead>Details / Destination</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -63,7 +63,6 @@ export default function AdminPaymentsPage() {
                 </TableRow>
               ) : (
                 payments.map((tx) => {
-                  // If withdraw, admin needs to know the net amount (after 20% tax)
                   const isWithdraw = tx.type === "Withdraw";
                   const displayAmount = Math.abs(tx.amount);
                   const netPayout = isWithdraw ? displayAmount * 0.8 : displayAmount;
@@ -80,6 +79,8 @@ export default function AdminPaymentsPage() {
                       </TableCell>
                       <TableCell className="font-medium text-slate-900">+{tx.userPhone}</TableCell>
                       <TableCell className="font-bold text-slate-900">{displayAmount.toLocaleString()} RWF</TableCell>
+                      
+                      {/* ✅ UPDATED: Shows either Withdraw details OR Deposit SMS proof */}
                       <TableCell>
                         {isWithdraw ? (
                           <div className="text-xs">
@@ -87,9 +88,17 @@ export default function AdminPaymentsPage() {
                             <p className="text-slate-500 mt-0.5">Payout: <strong className="text-slate-900">{netPayout.toLocaleString()} RWF</strong></p>
                           </div>
                         ) : (
-                          <span className="text-xs text-slate-400">N/A</span>
+                          <div className="text-xs max-w-[250px]">
+                            <p className="font-bold text-emerald-600 flex items-center gap-1">
+                              <FileText size={12} /> Payment Proof:
+                            </p>
+                            <p className="text-slate-600 mt-0.5 break-words line-clamp-3" title={tx.payment_proof}>
+                              {tx.payment_proof || "No SMS provided"}
+                            </p>
+                          </div>
                         )}
                       </TableCell>
+
                       <TableCell className="text-xs text-slate-500">
                         {new Date(tx.created_at).toLocaleString()}
                       </TableCell>

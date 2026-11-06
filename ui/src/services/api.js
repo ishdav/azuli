@@ -102,8 +102,8 @@ export const api = {
     return data;
   },
 
-  recharge: async (amount) => {
-    return await request('/users/deposit', { amount });
+  recharge: async (amount, paymentProof) => {
+    return await request('/users/deposit', { amount, paymentProof });
   },
 
   withdraw: async (amount, phoneNumber, network, withdrawPassword) => {

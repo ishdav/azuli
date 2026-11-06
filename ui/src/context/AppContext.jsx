@@ -48,9 +48,9 @@ export function AppProvider({ children }) {
     setUser(null);
   };
 
-  const recharge = async (amount) => {
-    await api.recharge(amount);
-    await refreshUser(); 
+    const recharge = async (amount, paymentProof) => {
+    await api.recharge(amount, paymentProof);
+    await refreshUser();
   };
 
   const withdraw = async (amount, phoneNumber, network, withdrawPassword) => {
