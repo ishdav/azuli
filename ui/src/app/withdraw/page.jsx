@@ -19,7 +19,7 @@ export default function WithdrawPage() {
 
   useEffect(() => {
     if (isLoaded && !user) router.push("/");
-    if (user && !withdrawPhone) setWithdrawPhone(user.phone); // Pre-fill with account phone
+    if (user && !withdrawPhone) setWithdrawPhone(user.phone); 
   }, [user, isLoaded, router, withdrawPhone]);
 
   if (!isLoaded || !user) return null;
@@ -56,96 +56,103 @@ export default function WithdrawPage() {
           <h2 className="text-3xl font-bold">{user.balance.toLocaleString()} RWF</h2>
         </Card>
 
-        <Card className="p-6 border-none shadow-sm bg-white rounded-3xl space-y-6">
-          
-          {/* Amount Input */}
-          <div>
-            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Amount (RWF)</label>
-            <div className="flex items-center gap-2 mt-2 bg-slate-50 rounded-2xl p-4 border border-slate-100 focus-within:border-indigo-500 transition-colors">
-              <span className="text-xl font-bold text-slate-400">RWF</span>
-              <input
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="0"
-                className="w-full bg-transparent outline-none text-3xl font-bold text-slate-900 placeholder:text-slate-300"
-              />
-            </div>
-            <p className="text-xs text-slate-500 mt-2">Min withdrawal: 3,000 RWF</p>
-          </div>
-
-          {/* Mobile Money Details */}
-          <div className="space-y-3">
+        {/* ✅ Wrapped in a form with autocomplete off */}
+        <form autoComplete="off" className="space-y-6">
+          <Card className="p-6 border-none shadow-sm bg-white rounded-3xl space-y-6">
+            
+            {/* Amount Input */}
             <div>
-              <label className="text-xs font-bold text-slate-500 uppercase">Mobile Money Number</label>
-              <input
-                type="tel"
-                value={withdrawPhone}
-                onChange={(e) => setWithdrawPhone(e.target.value)}
-                className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 outline-none text-sm font-medium"
-                placeholder="e.g., 0788..."
-              />
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Amount (RWF)</label>
+              <div className="flex items-center gap-2 mt-2 bg-slate-50 rounded-2xl p-4 border border-slate-100 focus-within:border-indigo-500 transition-colors">
+                <span className="text-xl font-bold text-slate-400">RWF</span>
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="0"
+                  className="w-full bg-transparent outline-none text-3xl font-bold text-slate-900 placeholder:text-slate-300"
+                />
+              </div>
+              <p className="text-xs text-slate-500 mt-2">Min withdrawal: 3,000 RWF</p>
             </div>
+
+            {/* Mobile Money Details */}
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase">Mobile Money Number</label>
+                <input
+                  type="tel"
+                  value={withdrawPhone}
+                  onChange={(e) => setWithdrawPhone(e.target.value)}
+                  className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 outline-none text-sm font-medium"
+                  placeholder="e.g., 0788..."
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase">Network</label>
+                <select
+                  value={network}
+                  onChange={(e) => setNetwork(e.target.value)}
+                  className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 outline-none text-sm font-medium"
+                >
+                  <option value="MTN">MTN Mobile Money</option>
+                  <option value="MPS">Airtel Money</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Security: Withdraw Password */}
             <div>
-              <label className="text-xs font-bold text-slate-500 uppercase">Network</label>
-              <select
-                value={network}
-                onChange={(e) => setNetwork(e.target.value)}
-                className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 outline-none text-sm font-medium"
-              >
-                <option value="MTN">MTN Mobile Money</option>
-                <option value="MPS">Airtel Money</option>
-              </select>
+              <label className="text-xs font-bold text-slate-500 uppercase">
+                {user.hasWithdrawPassword ? "Enter Withdraw Password" : "Create Withdraw Password"}
+              </label>
+              <input
+                type="password"
+                // ✅ ADDED: Unique name and autocomplete="new-password" to stop browser autofill
+                name="withdraw_security_pin"
+                autoComplete="new-password"
+                value={withdrawPassword}
+                onChange={(e) => setWithdrawPassword(e.target.value)}
+                placeholder={user.hasWithdrawPassword ? "••••••••" : "Set a new password"}
+                className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 outline-none text-sm"
+              />
+              {!user.hasWithdrawPassword && (
+                <p className="text-[10px] text-amber-600 mt-1">⚠️ This is NOT your login password. Keep it safe.</p>
+              )}
+              {user.hasWithdrawPassword && (
+                <p 
+                  className="text-[10px] text-indigo-600 mt-1 font-bold cursor-pointer hover:underline"
+                  onClick={() => router.push("/forgot-withdraw-password")}
+                >
+                  Forgot Withdraw Password?
+                </p>
+              )}
             </div>
-          </div>
 
-          {/* Security: Withdraw Password */}
-          <div>
-            <label className="text-xs font-bold text-slate-500 uppercase">
-              {user.hasWithdrawPassword ? "Enter Withdraw Password" : "Create Withdraw Password"}
-            </label>
-            <input
-              type="password"
-              value={withdrawPassword}
-              onChange={(e) => setWithdrawPassword(e.target.value)}
-              placeholder={user.hasWithdrawPassword ? "••••••••" : "Set a new password"}
-              className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 outline-none text-sm"
-            />
-            {!user.hasWithdrawPassword && (
-              <p className="text-[10px] text-amber-600 mt-1">⚠️ This is NOT your login password. Keep it safe.</p>
-            )}
-            {user.hasWithdrawPassword && (
-              <p 
-                className="text-[10px] text-indigo-600 mt-1 font-bold cursor-pointer hover:underline"
-                onClick={() => router.push("/forgot-withdraw-password")}
-              >
-                Forgot Withdraw Password?
-              </p>
-            )}
-          </div>
-
-          {/* Summary */}
-          <div className="bg-slate-50 rounded-2xl p-4 space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-slate-500">Tax (20%)</span>
-              <span className="font-bold text-rose-500">-{tax.toLocaleString()}</span>
+            {/* Summary */}
+            <div className="bg-slate-50 rounded-2xl p-4 space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Tax (20%)</span>
+                <span className="font-bold text-rose-500">-{tax.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-sm border-t border-slate-200 pt-2">
+                <span className="font-bold text-slate-900">You Receive</span>
+                <span className="font-bold text-emerald-600">{finalAmount.toLocaleString()} RWF</span>
+              </div>
             </div>
-            <div className="flex justify-between text-sm border-t border-slate-200 pt-2">
-              <span className="font-bold text-slate-900">You Receive</span>
-              <span className="font-bold text-emerald-600">{finalAmount.toLocaleString()} RWF</span>
-            </div>
-          </div>
 
-          <Button 
-            onClick={handleWithdraw}
-            disabled={loading || !canWithdraw}
-            className={`w-full h-14 rounded-2xl text-base font-bold ${
-              canWithdraw ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/30" : "bg-slate-200 text-slate-400"
-            }`}
-          >
-            {loading ? <Loader2 className="animate-spin" size={24} /> : "Confirm Withdrawal"}
-          </Button>
-        </Card>
+            <Button 
+              type="button" // ✅ Prevents form submission on click
+              onClick={handleWithdraw}
+              disabled={loading || !canWithdraw}
+              className={`w-full h-14 rounded-2xl text-base font-bold ${
+                canWithdraw ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/30" : "bg-slate-200 text-slate-400"
+              }`}
+            >
+              {loading ? <Loader2 className="animate-spin" size={24} /> : "Confirm Withdrawal"}
+            </Button>
+          </Card>
+        </form>
       </main>
     </div>
   );
