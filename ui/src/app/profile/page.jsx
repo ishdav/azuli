@@ -14,12 +14,15 @@ import {
 } from "lucide-react";
 
 export default function ProfilePage() {
-  const { user, isLoaded, logout } = useApp();
+  const { user, isLoaded, logout, refreshUser } = useApp();
   const router = useRouter();
 
   useEffect(() => {
-    if (isLoaded && !user) router.push("/");
-  }, [user, isLoaded, router]);
+  if (isLoaded && !user) router.push("/");
+  if (isLoaded && user) {
+    refreshUser(); // ✅ Fetch fresh data from the DB on load
+  }
+}, [user, isLoaded, router, refreshUser]);
 
   if (!isLoaded || !user) return null;
 
