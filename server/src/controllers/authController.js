@@ -10,6 +10,13 @@ const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 };
 
+const normalizePhone = (phone) => {
+  if (!phone) return phone;
+  const cleaned = phone.replace(/\s/g, '').replace(/^\+?250/, '');
+  // Return both formats to check
+  return [cleaned, `0${cleaned}`, cleaned.replace(/^0/, '')];
+};
+
 // @desc    Register a new user
 // @route   POST /api/auth/register
 export const registerUser = async (req, res) => {
@@ -145,32 +152,40 @@ export const requestPasswordReset = async (req, res) => {
   try {
     let targetPhone = phone;
     
-    // Handle the special WITHDRAW_RESET flag if you are using it
     if (phone === "WITHDRAW_RESET" && req.user) {
        const [users] = await connection.query('SELECT phone FROM users WHERE id = ?', [req.user.id]);
        targetPhone = users[0].phone;
     }
 
-    // Check if user exists
-    const [users] = await connection.query('SELECT id FROM users WHERE phone = ?', [targetPhone]);
+    // ✅ Handle multiple phone formats
+    const cleanPhone = targetPhone.replace(/^\+?250/, '').replace(/^0/, '');
+    const formats = [cleanPhone, `0${cleanPhone}`, `+250${cleanPhone}`];
+
+    // ✅ Query for any matching format
+    const [users] = await connection.query(
+      'SELECT id, phone FROM users WHERE phone IN (?, ?, ?)', 
+      formats
+    );
+
     if (users.length === 0) {
-      return res.status(404).json({ message: 'No account found with this phone number.' });
+      return res.status(404).json({ message: `No account found for ${targetPhone}. Please check your phone number.` });
     }
 
-    // Check if a pending request already exists to avoid spam
+    const foundPhone = users[0].phone; // Use the exact format stored in DB
+
+    // Check if a pending request already exists
     const [existing] = await connection.query(
       "SELECT id FROM password_reset_requests WHERE phone = ? AND status = 'Pending'", 
-      [targetPhone]
+      [foundPhone]
     );
     
     if (existing.length > 0) {
       return res.json({ message: 'You already have a pending request. Please contact Admin on WhatsApp.' });
     }
 
-    // Create new request
     await connection.query(
       'INSERT INTO password_reset_requests (id, phone) VALUES (?, ?)',
-      [crypto.randomUUID(), targetPhone]
+      [crypto.randomUUID(), foundPhone]
     );
 
     res.json({ message: 'Request submitted. Admin will contact you on WhatsApp shortly.' });
