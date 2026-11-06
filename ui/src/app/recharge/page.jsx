@@ -10,7 +10,7 @@ export default function RechargePage() {
   const { user, recharge, isLoaded } = useApp();
   const [amount, setAmount] = useState(10000);
   const [step, setStep] = useState(1); 
-  const [smsText, setSmsText] = useState(""); // ✅ State for SMS/TxnID
+  const [smsText, setSmsText] = useState(""); 
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -21,7 +21,7 @@ export default function RechargePage() {
   if (!isLoaded || !user) return null;
 
   const handleFund = () => {
-    if (amount < 10000) return alert("Minimum deposit is 10,000 RWF");
+    if (amount < 10000) return; // Safety check
     setStep(2);
   };
 
@@ -51,7 +51,6 @@ export default function RechargePage() {
 
       {step === 1 && (
         <>
-          {/* Step 1 UI (Amount Selection) */}
           <Card className="p-6 text-center border-slate-200 shadow-sm rounded-3xl bg-white">
             <h2 className="text-xl font-bold text-slate-900">FUND YOUR NODE</h2>
             <div className="flex justify-center gap-4 mt-4 text-xs text-slate-500">
@@ -62,21 +61,55 @@ export default function RechargePage() {
 
           <Card className="p-6 space-y-6 border-none shadow-sm bg-white rounded-3xl">
             <h3 className="text-center font-bold text-slate-900">Select Amount</h3>
+            
             <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-2xl p-4">
-              <Button variant="ghost" size="icon" onClick={() => setAmount(Math.max(0, amount - 5000))} className="rounded-xl">-</Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setAmount(Math.max(10000, amount - 5000))} 
+                className="rounded-xl"
+              >
+                -
+              </Button>
+              
               <div className="text-center">
                 <p className="text-xs text-indigo-600 font-bold">RWF</p>
                 <input 
                   type="number" 
-                  className="text-3xl font-bold text-center w-32 bg-transparent outline-none text-slate-900" 
+                  min="10000"
+                  className={`text-3xl font-bold text-center w-32 bg-transparent outline-none ${amount < 10000 ? 'text-rose-500' : 'text-slate-900'}`}
                   value={amount}
                   onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
                 />
               </div>
-              <Button variant="ghost" size="icon" onClick={() => setAmount(amount + 5000)} className="rounded-xl">+</Button>
+              
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setAmount(amount + 5000)} 
+                className="rounded-xl"
+              >
+                +
+              </Button>
             </div>
 
-            <Button onClick={handleFund} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-6 rounded-xl font-bold">
+            {/* ✅ Show error message if amount is too low */}
+            {amount < 10000 && (
+              <p className="text-center text-xs font-bold text-rose-500">
+                Minimum deposit is 10,000 RWF
+              </p>
+            )}
+
+            {/* ✅ Disable button if amount < 10000 */}
+            <Button 
+              onClick={handleFund} 
+              disabled={amount < 10000}
+              className={`w-full py-6 rounded-xl font-bold text-base transition-all ${
+                amount < 10000 
+                  ? "bg-slate-200 text-slate-400 cursor-not-allowed" 
+                  : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/30"
+              }`}
+            >
               FUND ACCOUNT
             </Button>
           </Card>
@@ -113,7 +146,6 @@ export default function RechargePage() {
               <p className="font-bold text-slate-800">Step 3</p>
               <p className="text-slate-600">Paste the payment SMS below</p>
               
-              {/* ✅ REQUIRED TEXTAREA FOR SMS OR TXN ID */}
               <textarea 
                 value={smsText}
                 onChange={(e) => setSmsText(e.target.value)}
