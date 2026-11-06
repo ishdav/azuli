@@ -4,20 +4,30 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
-import { Copy, CheckCircle2, Users, Gift, TrendingUp, ShieldCheck } from "lucide-react";
+import { Copy, CheckCircle2, Users, Gift, TrendingUp, ShieldCheck, Link as LinkIcon } from "lucide-react";
 import Header from "@/components/Header";
 import Loader from "@/components/Loader";
 
 export default function TeamPage() {
   const { user, isLoaded, getDownlines } = useApp();
   const router = useRouter();
+  
   const [downlines, setDownlines] = useState([]);
   const [copied, setCopied] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false); // ✅ State for link copy
+  const [inviteLink, setInviteLink] = useState(""); // ✅ State for the link URL
   const [loadingDownlines, setLoadingDownlines] = useState(true);
 
   useEffect(() => {
     if (isLoaded && !user) router.push("/");
   }, [user, isLoaded, router]);
+
+  // ✅ Generate the invite link once the user data is loaded
+  useEffect(() => {
+    if (user && typeof window !== 'undefined') {
+      setInviteLink(`${window.location.origin}/register?invite=${user.inviteCode}`);
+    }
+  }, [user]);
 
   // Fetch downlines from backend
   useEffect(() => {
@@ -38,13 +48,20 @@ export default function TeamPage() {
     setTimeout(() => setCopied(false), 2000);
   }, [user]);
 
+  // ✅ Function to copy the full URL
+  const copyLink = useCallback(() => {
+    if (!inviteLink) return;
+    navigator.clipboard.writeText(inviteLink);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
+  }, [inviteLink]);
+
   if (!isLoaded || loadingDownlines) {
     return <Loader message="Loading your network..." />;
   }
 
   if (!user) return null;
 
-  // Since the backend already filters by direct invites, we just use downlines.length
   const totalBonus = downlines.length * 2500;
 
   return (
@@ -56,7 +73,7 @@ export default function TeamPage() {
 
       <main className="p-5 space-y-6">
         
-        {/* Invitation Code Card */}
+        {/* Invitation Code & Link Card */}
         <div className="relative overflow-hidden rounded-[2rem] bg-slate-50 p-7 shadow-xl shadow-slate-200/50 border border-slate-200/80">
           <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-indigo-200/40 to-transparent rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
           
@@ -76,21 +93,35 @@ export default function TeamPage() {
                 {copied ? (
                   <><CheckCircle2 size={12} className="text-emerald-500" /> Copied</>
                 ) : (
-                  <><Copy size={12} /> Copy</>
+                  <><Copy size={12} /> Copy Code</>
                 )}
               </button>
             </div>
             
-            <div className="flex items-baseline gap-2 mb-6 mt-1">
+            <div className="flex items-baseline gap-2 mb-4 mt-1">
               <h1 className="text-4xl font-medium tracking-tight text-slate-900">
                 {user.inviteCode}
               </h1>
             </div>
 
-            <div className="flex items-start gap-2 text-[11px] text-slate-600 bg-white shadow-sm border border-slate-100 px-3 py-2.5 rounded-xl">
+            {/* ✅ NEW: Invitation Link Section */}
+            <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between gap-3 mb-4">
+              <div className="flex items-center gap-2 overflow-hidden">
+                <LinkIcon size={14} className="text-indigo-500 flex-shrink-0" />
+                <p className="text-xs text-slate-500 truncate">{inviteLink}</p>
+              </div>
+              <button 
+                onClick={copyLink}
+                className="text-[10px] font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-md transition-colors flex-shrink-0 flex items-center gap-1"
+              >
+                {copiedLink ? <><CheckCircle2 size={12} /> Copied</> : <><Copy size={12} /> Copy Link</>}
+              </button>
+            </div>
+
+            <div className="flex items-start gap-2 text-[11px] text-slate-600 bg-slate-100/50 shadow-sm border border-slate-100 px-3 py-2.5 rounded-xl">
               <TrendingUp size={14} className="text-emerald-500 flex-shrink-0 mt-0.5" />
               <p>
-                Earn <strong className="text-slate-900">2,500 RWF</strong> per direct invite.
+                Earn <strong className="text-slate-900">2,500 RWF</strong> per direct invite. Share the link above for automatic setup!
               </p>
             </div>
           </div>
