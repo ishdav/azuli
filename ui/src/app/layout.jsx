@@ -7,10 +7,10 @@ export const instant = false;
 export const metadata = {
   title: "Azuli Wealth",
   description: "Premium AI Yield Aggregation",
-  icons : {
-    icon: "/ui/public/logo.svg",
-    shortcut: "/ui/public/logo.svg",
-    apple: "/ui/public/logo.svg",
+  icons: {
+    icon: "/logo.svg",
+    shortcut: "/logo.svg",
+    apple: "/logo.svg",
   },
   robots: {
     index: false,
