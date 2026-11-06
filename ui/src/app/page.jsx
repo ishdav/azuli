@@ -5,13 +5,19 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Loader2, ArrowRight, User } from "lucide-react";
 import Image from "next/image";
-import Logo from "../../public/logo.svg"; // Adjust path if necessary
+import Logo from "../../public/logo.svg";
 
 export default function LoginPage() {
+  // ✅ State starts empty
   const [form, setForm] = useState({ phone: "", password: "" });
   const [loading, setLoading] = useState(false);
   const { login, user } = useApp();
   const router = useRouter();
+
+  // ✅ Clear form state when the page mounts
+  useEffect(() => {
+    setForm({ phone: "", password: "" });
+  }, []);
 
   useEffect(() => {
     if (user) router.push("/home");
@@ -31,10 +37,8 @@ export default function LoginPage() {
   };
 
   return (
-    // Added 'relative' to the main container for absolute positioning
     <div className="relative min-h-screen flex flex-col justify-center p-6 bg-white animate-fade-in">
       
-      {/* ✅ Top Right Branding (Logo + Name) */}
       <div className="absolute top-6 right-6 flex items-center gap-2">
         <Image 
           src={Logo} 
@@ -47,7 +51,6 @@ export default function LoginPage() {
       </div>
 
       <div className="mb-12 mt-10">
-        {/* Changed the icon to something more premium */}
         <div className="w-12 h-12 bg-indigo-600 rounded-xl mb-6 flex items-center justify-center shadow-lg shadow-indigo-600/30">
           <User className="text-white" size={24} />
         </div>
@@ -58,12 +61,18 @@ export default function LoginPage() {
         <p className="text-sm text-slate-500 mt-2">Enter your credentials to access your portfolio.</p>
       </div>
 
-      <div className="space-y-5">
+      {/* ✅ Added autoComplete="off" to the form wrapper */}
+      <form autoComplete="off" className="space-y-5" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+        
         <div>
           <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Phone Number</label>
           <div className="flex items-center border-b-2 border-slate-200 focus-within:border-indigo-600 transition-colors py-3 mt-1">
             <span className="text-slate-400 font-medium mr-3">+250</span>
             <input
+              // ✅ Changed autoComplete to off and added a random name
+              autoComplete="off"
+              name="login_phone_no"
+              type="tel"
               className="w-full outline-none text-lg font-medium bg-transparent placeholder:text-slate-300"
               placeholder="7XX XXX XXX"
               maxLength="9"
@@ -77,25 +86,21 @@ export default function LoginPage() {
           <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Password</label>
           <div className="border-b-2 border-slate-200 focus-within:border-indigo-600 transition-colors py-3 mt-1">
             <input
+              // ✅ autoComplete="new-password" stops the browser from filling the old password
+              autoComplete="new-password"
+              name="login_password"
               type="password"
               placeholder="••••••••"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               className="w-full outline-none text-lg font-medium bg-transparent placeholder:text-slate-300"
             />
-<div className="flex justify-end mt-2">
-  <span 
-    onClick={() => router.push("/forgot-password")} 
-    className="text-xs font-bold text-indigo-600 cursor-pointer hover:underline"
-  >
-    Forgot Password?
-  </span>
-</div>
           </div>
         </div>
 
+        {/* ... Rest of your button and links ... */}
         <Button
-          onClick={handleLogin}
+          type="submit"
           disabled={loading}
           className="w-full h-14 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-base mt-8 shadow-xl shadow-slate-900/20"
         >
@@ -112,7 +117,7 @@ export default function LoginPage() {
             Apply for access
           </span>
         </p>
-      </div>
+      </form>
     </div>
   );
 }
