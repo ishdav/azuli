@@ -3,11 +3,16 @@ import { Card } from "@/components/ui/card";
 import { Activity } from "lucide-react";
 
 export default function NodeCard({ node, catalogItem }) {
+  // ✅ Safety fallbacks for missing data
+  const purchaseDate = node.purchaseDate || new Date().toISOString();
   const daysRunning = Math.max(
     1,
-    Math.floor((Date.now() - new Date(node.purchaseDate).getTime()) / (1000 * 60 * 60 * 24))
+    Math.floor((Date.now() - new Date(purchaseDate).getTime()) / (1000 * 60 * 60 * 24))
   );
-  const currentYield = daysRunning * node.dailyYield;
+  const dailyYield = node.dailyYield || 0;
+  const buyPrice = node.buyPrice || 0;
+  
+  const currentYield = daysRunning * dailyYield;
   const progress = Math.min((daysRunning / 150) * 100, 100);
 
   return (
@@ -16,19 +21,19 @@ export default function NodeCard({ node, catalogItem }) {
         <div className="w-12 h-12 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
           <img 
             src={catalogItem?.image || "/images/placeholder.jpg"} 
-            alt={node.name} 
+            alt={node.name || "Node"} 
             className="w-full h-full object-cover" 
           />
         </div>
         <div className="flex-1">
           <div className="flex justify-between items-center">
-            <h4 className="font-bold text-sm text-slate-900">{node.name}</h4>
+            <h4 className="font-bold text-sm text-slate-900">{node.name || "Unknown Node"}</h4>
             <span className="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-1 rounded-md font-bold flex items-center gap-1">
-              <Activity size={10} /> {node.status}
+              <Activity size={10} /> {node.status || "Active"}
             </span>
           </div>
           <p className="text-[10px] text-slate-500 mt-0.5">
-            {node.buyPrice.toLocaleString()} RWF · 150 Days
+            {buyPrice.toLocaleString()} RWF · 150 Days
           </p>
         </div>
       </div>
@@ -40,7 +45,7 @@ export default function NodeCard({ node, catalogItem }) {
         </div>
         <div className="text-right">
           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Daily</p>
-          <p className="font-bold text-emerald-600">+{node.dailyYield.toLocaleString()}</p>
+          <p className="font-bold text-emerald-600">+{dailyYield.toLocaleString()}</p>
         </div>
       </div>
 

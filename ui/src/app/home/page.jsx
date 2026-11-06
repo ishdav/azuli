@@ -44,7 +44,6 @@ export default function HomePage() {
   return (
     <div className="animate-fade-in bg-slate-50 min-h-screen">
       
-      {/* ✅ Header is HIDDEN on phones, visible on md (tablets/desktop) */}
       <div className="hidden md:block">
         <Header 
           title="Dashboard" 
@@ -81,7 +80,7 @@ export default function HomePage() {
             
             <div className="flex items-baseline gap-2 mb-6 mt-1">
               <h1 className="text-5xl font-medium tracking-tight text-slate-900">
-                {user.balance.toLocaleString()}
+                {(user.balance || 0).toLocaleString()}
               </h1>
               <span className="text-slate-400 font-medium text-xs tracking-[0.2em] uppercase">RWF</span>
             </div>
@@ -144,11 +143,11 @@ export default function HomePage() {
                   <div className="flex justify-between items-center pt-4 border-t border-slate-100">
                     <div>
                       <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Price</p>
-                      <p className="font-bold text-sm text-slate-900">{plan.price.toLocaleString()} RWF</p>
+                      <p className="font-bold text-sm text-slate-900">{(plan.price || 0).toLocaleString()} RWF</p>
                     </div>
                     <div className="text-right">
                       <p className="text-[10px] text-emerald-500 uppercase font-bold tracking-wider">Daily Yield</p>
-                      <p className="font-bold text-sm text-emerald-600">+{plan.dailyYield.toLocaleString()}</p>
+                      <p className="font-bold text-sm text-emerald-600">+{(plan.dailyYield || 0).toLocaleString()}</p>
                     </div>
                   </div>
                 </div>
@@ -225,10 +224,11 @@ export default function HomePage() {
               activeNodes.map((node) => {
                 const daysPassed = Math.max(
                   1,
-                  Math.floor((Date.now() - new Date(node.purchaseDate).getTime()) / (1000 * 60 * 60 * 24))
+                  Math.floor((Date.now() - new Date(node.purchaseDate || Date.now()).getTime()) / (1000 * 60 * 60 * 24))
                 );
                 const progress = Math.min((daysPassed / 150) * 100, 100);
                 const isCompleted = progress >= 100;
+                const dailyYield = node.dailyYield || 0;
 
                 return (
                   <Card key={node.id} className="p-4 border-none shadow-sm bg-white rounded-2xl flex items-center gap-4">
@@ -237,8 +237,8 @@ export default function HomePage() {
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between items-center mb-1">
-                        <h4 className="font-bold text-sm text-slate-900">{node.name}</h4>
-                        <span className="text-xs font-bold text-emerald-600">+{node.dailyYield.toLocaleString()}/d</span>
+                        <h4 className="font-bold text-sm text-slate-900">{node.name || "Node"}</h4>
+                        <span className="text-xs font-bold text-emerald-600">+{dailyYield.toLocaleString()}/d</span>
                       </div>
                       <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                         <div 
@@ -278,22 +278,27 @@ export default function HomePage() {
           
           <div className="space-y-2">
             {recentTransactions.length > 0 ? (
-              recentTransactions.map((tx) => (
-                <div key={tx.id} className="flex items-center justify-between p-3 bg-white rounded-2xl shadow-sm border border-slate-100">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${tx.amount < 0 ? 'bg-rose-50 text-rose-600' : 'bg-emerald-50 text-emerald-600'}`}>
-                      {tx.amount < 0 ? <ArrowUpRight size={14} /> : <ArrowDownLeft size={14} />}
+              recentTransactions.map((tx) => {
+                const amount = tx.amount || 0;
+                return (
+                  <div key={tx.id} className="flex items-center justify-between p-3 bg-white rounded-2xl shadow-sm border border-slate-100">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${amount < 0 ? 'bg-rose-50 text-rose-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                        {amount < 0 ? <ArrowUpRight size={14} /> : <ArrowDownLeft size={14} />}
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-slate-900">{tx.type}</p>
+                        <p className="text-[10px] text-slate-400">
+                          {tx.date ? new Date(tx.date).toLocaleDateString() : "Recent"}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-xs font-bold text-slate-900">{tx.type}</p>
-                      <p className="text-[10px] text-slate-400">{new Date(tx.date).toLocaleDateString()}</p>
-                    </div>
+                    <p className={`text-xs font-bold ${amount < 0 ? 'text-slate-900' : 'text-emerald-600'}`}>
+                      {amount < 0 ? '' : '+'}{amount.toLocaleString()} RWF
+                    </p>
                   </div>
-                  <p className={`text-xs font-bold ${tx.amount < 0 ? 'text-slate-900' : 'text-emerald-600'}`}>
-                    {tx.amount < 0 ? '' : '+'}{tx.amount.toLocaleString()} RWF
-                  </p>
-                </div>
-              ))
+                );
+              })
             ) : (
               <p className="text-xs text-slate-400 text-center py-4">No recent activity.</p>
             )}

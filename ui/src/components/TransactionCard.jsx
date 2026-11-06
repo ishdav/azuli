@@ -7,12 +7,15 @@ const ICON_MAP = {
   Withdraw: { icon: ArrowUpRight, color: "bg-rose-50 text-rose-600" },
   Purchase: { icon: ShoppingCart, color: "bg-indigo-50 text-indigo-600" },
   Referral: { icon: Gift, color: "bg-amber-50 text-amber-600" },
+  "Daily Yield": { icon: ArrowDownLeft, color: "bg-emerald-50 text-emerald-600" },
+  "Check-in": { icon: CheckCircle2, color: "bg-emerald-50 text-emerald-600" },
 };
 
 export default function TransactionCard({ tx }) {
   const config = ICON_MAP[tx.type] || ICON_MAP.Deposit;
   const Icon = config.icon;
-  const isNegative = tx.amount < 0;
+  const amount = tx.amount || 0; // ✅ Safety fallback
+  const isNegative = amount < 0;
 
   return (
     <Card className="p-4 border-none shadow-sm bg-white rounded-2xl flex items-center justify-between">
@@ -23,19 +26,21 @@ export default function TransactionCard({ tx }) {
         <div>
           <p className="font-bold text-sm text-slate-900">{tx.type}</p>
           <p className="text-[10px] text-slate-400 mt-0.5">
-            {new Date(tx.date).toLocaleString("en-GB", {
+            {tx.date ? new Date(tx.date).toLocaleString("en-GB", {
               day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit"
-            })}
+            }) : "Unknown Date"}
           </p>
         </div>
       </div>
       
       <div className="text-right">
         <p className={`font-bold text-sm ${isNegative ? "text-slate-900" : "text-emerald-600"}`}>
-          {isNegative ? "" : "+"}{tx.amount.toLocaleString()} RWF
+          {isNegative ? "" : "+"}{amount.toLocaleString()} RWF
         </p>
-        <div className="flex items-center justify-end gap-1 mt-1 text-[10px] text-emerald-600 font-medium">
-          <CheckCircle2 size={10} /> {tx.status}
+        <div className={`flex items-center justify-end gap-1 mt-1 text-[10px] font-medium ${
+          tx.status === "Pending" ? "text-amber-500" : "text-emerald-600"
+        }`}>
+          <CheckCircle2 size={10} /> {tx.status || "Success"}
         </div>
       </div>
     </Card>
