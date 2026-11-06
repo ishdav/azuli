@@ -11,7 +11,8 @@ import {
   LogOut,
   ChevronRight,
   Copy,
-  CheckCircle2
+  CheckCircle2,
+  User
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
@@ -78,10 +79,10 @@ export default function AppMenu() {
         <div className="font-normal p-3 bg-slate-50 rounded-xl mb-2">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-indigo-600/20">
-              {user.phone.slice(-2)}
+              <User size={18} />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-bold text-slate-900">+{user.phone}</span>
+              <span className="text-sm font-bold text-slate-900">+250 {user.phone}</span>
               
               {/* Copy Code Button - Changed to a div with role="button" to avoid nested button issues inside the menu */}
               <div 
