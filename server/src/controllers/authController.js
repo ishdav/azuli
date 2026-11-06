@@ -136,23 +136,38 @@ export const loginUser = async (req, res) => {
   }
 };
 
+// @desc    Request password reset
+// @route   POST /api/auth/forgot-password
 export const requestPasswordReset = async (req, res) => {
-  const { phone } = req.body; // If phone is 'WITHDRAW_RESET', it means they are logged in and want a withdraw reset
+  const { phone } = req.body;
   const connection = await pool.getConnection();
 
   try {
     let targetPhone = phone;
     
-    // If the frontend sent a special flag, we use the logged-in user's phone
+    // Handle the special WITHDRAW_RESET flag if you are using it
     if (phone === "WITHDRAW_RESET" && req.user) {
-       // Note: This requires the route to be protected by protectUser middleware
        const [users] = await connection.query('SELECT phone FROM users WHERE id = ?', [req.user.id]);
        targetPhone = users[0].phone;
     }
 
+    // Check if user exists
     const [users] = await connection.query('SELECT id FROM users WHERE phone = ?', [targetPhone]);
-    if (users.length === 0) return res.status(404).json({ message: 'No account found.' });
+    if (users.length === 0) {
+      return res.status(404).json({ message: 'No account found with this phone number.' });
+    }
 
+    // Check if a pending request already exists to avoid spam
+    const [existing] = await connection.query(
+      "SELECT id FROM password_reset_requests WHERE phone = ? AND status = 'Pending'", 
+      [targetPhone]
+    );
+    
+    if (existing.length > 0) {
+      return res.json({ message: 'You already have a pending request. Please contact Admin on WhatsApp.' });
+    }
+
+    // Create new request
     await connection.query(
       'INSERT INTO password_reset_requests (id, phone) VALUES (?, ?)',
       [crypto.randomUUID(), targetPhone]
