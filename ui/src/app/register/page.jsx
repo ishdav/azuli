@@ -69,6 +69,7 @@ function RegisterForm() {
                 placeholder="Enter your mobile number"
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                maxLength={9}
               />
             </div>
           </div>
