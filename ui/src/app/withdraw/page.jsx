@@ -86,6 +86,7 @@ export default function WithdrawPage() {
                   onChange={(e) => setWithdrawPhone(e.target.value)}
                   className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 outline-none text-sm font-medium"
                   placeholder="e.g., 0788..."
+                  maxLength={9}
                 />
               </div>
               <div>
